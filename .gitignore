@@ -1,0 +1,3 @@
+# Exclude large datasets exceeding GitHub 100MB single-file limit
+data/train.csv
+data/trackman_history.csv
