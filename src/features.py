@@ -2,9 +2,9 @@
 features.py — 학습 & 추론 공유 피처 엔지니어링 모듈
 
 ⚠️ 핵심 규칙:
-  - 학습 노트북과 script.py 양쪽에서 동일한 build_features()를 import
+  - 학습용 build_features()와 제출 script.py의 동명 함수를 항상 동기화
   - test 행 간 cross-referencing 절대 금지 (groupby, rolling, freq encoding 등)
-  - 2025 시즌 데이터 사용 금지
+  - 추론 중 test 기반 fit/집계/보정 금지
 """
 
 import pandas as pd
@@ -83,30 +83,19 @@ def load_data(path: str, is_train: bool = True) -> pd.DataFrame:
 
 
 # ──────────────────────────────────────────────
-# 3. 피처 엔지니어링 (학습 == 추론 동일)
+# 3. 피처 엔지니어링 (현재 베이스라인 계약)
 # ──────────────────────────────────────────────
-ASOF_COLS = [c for c in DTYPE_MAP if c.startswith("asof_")]
-
-
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
+    """현재 베이스라인의 모델 입력 피처 생성.
+
+    현재는 식별자와 정답만 제외한다. 파생 피처를 추가할 때는 현재 행의
+    값만 사용하고 script.py의 build_features()도 함께 변경한 뒤
+    scripts/verify_features.py를 통과해야 한다.
     """
-    모델 입력 피처 생성.
-
-    ⚠️ 이 함수는 train/test 모두에서 동일하게 호출되어야 합니다.
-    추가 피처를 만들 때 반드시 여기에 추가하세요.
-    """
-    feat = df.drop(columns=[ID_COL] + ([TARGET_COL] if TARGET_COL in df.columns else []))
-
-    # --- (a) asof_* 결측 플래그 ---
-    for col in ASOF_COLS:
-        if col in feat.columns:
-            feat[f"{col}_isna"] = feat[col].isna().astype("int8")
-
-    # --- (b) 파생 피처 예시 (필요 시 활성화) ---
-    # feat["count_state"] = feat["balls_before"] * 10 + feat["strikes_before"]
-    # feat["pitcher_batter_same_hand"] = (feat["pitcher_hand"] == feat["batter_hand"]).astype("int8")
-
-    return feat
+    drop_columns = [ID_COL]
+    if TARGET_COL in df.columns:
+        drop_columns.append(TARGET_COL)
+    return df.drop(columns=drop_columns)
 
 
 # ──────────────────────────────────────────────

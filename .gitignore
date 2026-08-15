@@ -8,6 +8,7 @@ data/trackman_history.csv
 # Python 가상환경
 # ──────────────────────────────────────
 .venv/
+.venv-submit/
 
 # ──────────────────────────────────────
 # Python bytecode & cache
@@ -30,6 +31,15 @@ model/*.joblib
 model/*.bin
 model/*.cbm
 model/*.txt
+model/*.json
+
+# ──────────────────────────────────────
+# 머신러닝 로그 & 임시 디렉토리
+# ──────────────────────────────────────
+catboost_info/
+wandb/
+lightning_logs/
+
 
 # ──────────────────────────────────────
 # 출력 파일

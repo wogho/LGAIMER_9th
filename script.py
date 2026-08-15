@@ -2,69 +2,79 @@
 import os
 
 import joblib
+import numpy as np
 import pandas as pd
 
 ID_COL = "row_id"
 TARGET_COL = "control_success"
 
 
-# =======================
-# 데이터 로드 유틸
-# =======================
-
 def load_test(path):
-    """평가 데이터(csv) 로드. 한 행이 투구 하나."""
+    """평가 데이터 로드 및 추론 입력 계약 검증."""
     df = pd.read_csv(path, encoding="utf-8-sig")
     if ID_COL not in df.columns:
         raise ValueError(f"test 데이터에 {ID_COL} 컬럼이 없음: {list(df.columns)[:5]}")
+    if TARGET_COL in df.columns:
+        raise ValueError(f"test 데이터에 정답 컬럼 {TARGET_COL}이 포함되어 있음")
+    if df[ID_COL].isna().any():
+        raise ValueError("test 데이터의 row_id에 결측값이 있음")
+    if df[ID_COL].duplicated().any():
+        raise ValueError("test 데이터의 row_id에 중복값이 있음")
     return df
 
 
 def load_sample_submission(path):
-    """sample_submission.csv 로드 — 제출 파일의 row_id 순서/컬럼 기준."""
+    """sample_submission.csv 로드 및 출력 계약 검증."""
     df = pd.read_csv(path, encoding="utf-8-sig")
-    if list(df.columns[:2]) != [ID_COL, TARGET_COL]:
-        raise ValueError(
-            f"sample_submission 컬럼이 ({ID_COL}, {TARGET_COL})이 아님: "
-            f"{list(df.columns)}")
+    expected = [ID_COL, TARGET_COL]
+    if list(df.columns) != expected:
+        raise ValueError(f"sample_submission 컬럼 {list(df.columns)} != {expected}")
+    if df[ID_COL].isna().any():
+        raise ValueError("sample_submission의 row_id에 결측값이 있음")
+    if df[ID_COL].duplicated().any():
+        raise ValueError("sample_submission의 row_id에 중복값이 있음")
     return df
 
 
-# =======================
-# 학습 때 사용한 전처리 (그대로)
-# =======================
-
 def build_features(df):
-    """모델 입력 추출 — 학습 때와 동일하게 row_id만 빼고 전부 사용.
+    """학습과 동일한 행별 피처 추출.
 
-    범주형 인코딩(top_bottom, game_type, base_state)과 결측 대치는
-    모델 파일 안의 파이프라인이 함께 수행하므로 여기서는 컬럼만 고른다.
+    현재 베이스라인은 row_id만 제외한다. 이 함수에는 현재 행의 값만
+    사용하는 파생 피처만 추가할 수 있으며, test 배치 통계는 금지한다.
     """
     return df.drop(columns=[ID_COL])
 
 
-# =======================
-# 제출 파일 생성 유틸
-# =======================
-
 def merge_predictions(sub, ids, preds):
-    """sample_submission의 row_id 순서에 맞춰 예측 확률 병합.
+    """예측을 제출 순서에 맞추되 누락·중복·비정상 값을 즉시 차단."""
+    ids = pd.Series(ids, name=ID_COL)
+    predictions = np.asarray(preds, dtype=np.float64)
 
-    예측에 없는 row_id는 sample_submission의 기존 값(placeholder)을 유지한다.
-    """
-    pred_map = dict(zip(ids, preds))
-    values, n_missing = [], 0
-    for rid, cur in zip(sub[ID_COL], sub[TARGET_COL]):
-        p = pred_map.get(rid)
-        if p is None:
-            n_missing += 1
-            values.append(cur)
-        else:
-            values.append(p)
-    if n_missing:
-        print(f" 경고: 예측이 없어 placeholder를 유지한 row_id {n_missing}건")
-    sub[TARGET_COL] = values
-    return sub
+    if len(ids) != len(predictions):
+        raise ValueError(
+            f"ID 수와 예측 수 불일치: ids={len(ids)}, preds={len(predictions)}"
+        )
+    if ids.isna().any() or ids.duplicated().any():
+        raise ValueError("예측 ID에 결측 또는 중복값이 있음")
+    if sub[ID_COL].isna().any() or sub[ID_COL].duplicated().any():
+        raise ValueError("제출 ID에 결측 또는 중복값이 있음")
+    if set(ids.tolist()) != set(sub[ID_COL].tolist()):
+        missing = set(sub[ID_COL]) - set(ids)
+        extra = set(ids) - set(sub[ID_COL])
+        raise ValueError(
+            f"예측 ID와 제출 ID 불일치: missing={len(missing)}, extra={len(extra)}"
+        )
+    if not np.isfinite(predictions).all():
+        raise ValueError("예측값에 NaN 또는 Inf가 있음")
+    if ((predictions < 0.0) | (predictions > 1.0)).any():
+        raise ValueError("예측 확률이 [0, 1] 범위를 벗어남")
+
+    pred_by_id = pd.Series(predictions, index=ids.to_numpy())
+    result = sub.copy()
+    result[TARGET_COL] = result[ID_COL].map(pred_by_id)
+    if result[TARGET_COL].isna().any():
+        raise ValueError("제출 순서 정렬 후 누락된 예측이 있음")
+    return result
 
 
 def save_submission(path, sub):
@@ -72,47 +82,40 @@ def save_submission(path, sub):
     sub.to_csv(path, index=False, encoding="utf-8")
 
 
-# =======================
-# main
-# =======================
-
 def main():
-    # ---- 경로 변수 (필요에 따라 수정) ----
-    TEST_DIR = "./data"            # test.csv, sample_submission.csv 위치
-    MODEL_DIR = "./model"          # rf.pkl 위치
-    OUT_DIR = "./output"
-    TEST_PATH = os.path.join(TEST_DIR, "test.csv")
-    SAMPLE_SUB_PATH = os.path.join(TEST_DIR, "sample_submission.csv")
-    MODEL_PATH = os.path.join(MODEL_DIR, "rf.pkl")
-    OUT_PATH = os.path.join(OUT_DIR, "submission.csv")
+    test_path = "./data/test.csv"
+    sample_sub_path = "./data/sample_submission.csv"
+    model_path = "./model/rf.pkl"
+    output_path = "./output/submission.csv"
 
-    # ---- 모델 로드 ----
     print("Load model...")
-    model = joblib.load(MODEL_PATH)
+    model = joblib.load(model_path)
     print(f" OK. n_features={getattr(model, 'n_features_in_', '?')}")
 
-    # ---- 테스트 데이터 로드 ----
     print("Load test data...")
-    test = load_test(TEST_PATH)
-    sub = load_sample_submission(SAMPLE_SUB_PATH)
+    test = load_test(test_path)
+    sub = load_sample_submission(sample_sub_path)
+    if len(test) != len(sub):
+        raise ValueError(f"test/submission 행 수 불일치: {len(test)} != {len(sub)}")
     print(f" test={len(test)}  submission={len(sub)}")
 
-    # ---- 전처리 (학습과 동일) ----
     print("Build features...")
-    ids = test[ID_COL].tolist()
-    X = build_features(test)
-    print(f" features={X.shape[1]}")
+    ids = test[ID_COL].copy()
+    features = build_features(test)
+    print(f" features={features.shape[1]}")
 
-    # ---- 예측 (제구 성공 확률) ----
     print("Inference model...")
-    preds = model.predict_proba(X)[:, 1] if len(X) else []
-    print(f" preds={len(preds)}")
+    predictions = (
+        model.predict_proba(features)[:, 1]
+        if len(features)
+        else np.array([], dtype=np.float64)
+    )
+    print(f" preds={len(predictions)}")
 
-    # ---- sample_submission 기반 결과 생성 ----
     print("Build submission...")
-    sub = merge_predictions(sub, ids, preds)
-    save_submission(OUT_PATH, sub)
-    print(f"✅ Saved: {OUT_PATH} (rows={len(sub)})")
+    submission = merge_predictions(sub, ids, predictions)
+    save_submission(output_path, submission)
+    print(f"✅ Saved: {output_path} (rows={len(submission)})")
 
 
 if __name__ == "__main__":
