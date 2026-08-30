@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+import hashlib,importlib.util,json,os,shutil,subprocess,sys,tempfile,zipfile
+from pathlib import Path
+import numpy as np,pandas as pd
+ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'model/REF4-DISJOINT-RSPLIT-FPSYCH-ZIP-050A'
+def sha(p):
+ h=hashlib.sha256()
+ with open(p,'rb') as f:
+  for b in iter(lambda:f.read(1<<20),b''):h.update(b)
+ return h.hexdigest()
+def ignore(_d,names):return {n for n in names if n=='__pycache__' or n.endswith('.pyc') or n in {'data','output'}}
+def run(source,test):
+ with tempfile.TemporaryDirectory(prefix='verify_050_run_') as td:
+  d=Path(td)/'bundle';shutil.copytree(source,d,copy_function=os.link,ignore=ignore);(d/'data').mkdir();test.to_csv(d/'data/test.csv',index=False);p=subprocess.run([sys.executable,'script.py'],cwd=d,text=True,capture_output=True,timeout=600)
+  if p.returncode:raise RuntimeError({'stdout':p.stdout,'stderr':p.stderr})
+  return pd.read_csv(d/'output/submission.csv')
+def module(path):
+ s=importlib.util.spec_from_file_location('verify_entity_context_split',path);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+def main():
+ c=json.loads((OUT/'audit_contract.json').read_text());res=json.loads((OUT/'result.json').read_text());man=json.loads((OUT/'audit_manifest.json').read_text());checks=[]
+ def ck(n,p,a,e=None):checks.append({'name':n,'checked':True,'pass':bool(p),'actual':a,'expected':e})
+ bad=[]
+ for rel,v in man['artifacts'].items():
+  p=ROOT/rel
+  if not p.is_file() or sha(p)!=v['sha256'] or p.stat().st_size!=v['size']:bad.append(rel)
+ ck('manifest',not bad,bad,[]);ck('manifest_count',man['artifact_count']==len(man['artifacts']),len(man['artifacts']),man['artifact_count']);target=ROOT/c['output_zip'];inventory=pd.read_csv(OUT/'package_inventory.csv');z=zipfile.ZipFile(target);members=sorted(i.filename for i in z.infolist() if not i.is_dir());ck('member_names',members==sorted(inventory.member.tolist()) and len(members)==res['candidate_file_count']==res['zip_member_count'],{'members':len(members),'inventory':len(inventory)},{'members':res['candidate_file_count']});member_bad=[]
+ for row in inventory.itertuples(index=False):
+  data=z.read(row.member)
+  if len(data)!=row.size or hashlib.sha256(data).hexdigest()!=row.sha256:member_bad.append(row.member)
+ ck('member_hashes',not member_bad,member_bad,[]);ck('ppt','solution/LG_Aimers_솔루션_PPT_Phase2.pptx' in members,'solution/LG_Aimers_솔루션_PPT_Phase2.pptx');test=pd.read_csv(ROOT/'data/test.csv')
+ with tempfile.TemporaryDirectory(prefix='verify_050_zip_') as td:
+  extracted=Path(td)/'bundle';z.extractall(extracted);full=run(extracted,test);single=run(extracted,test.iloc[[0]]);pt=test.sample(frac=1,random_state=50050).reset_index(drop=True);perm=run(extracted,pt);aug_test=pd.concat([test,test.iloc[[0]].assign(row_id=test.row_id.iloc[0]+'_AUG')],ignore_index=True);aug=run(extracted,aug_test);saved=pd.read_csv(OUT/'full_predictions.csv');p=full.control_success.to_numpy(float);full_diff=float(np.max(np.abs(p-saved.control_success.to_numpy(float))));fm=full.set_index('row_id').control_success;sd=float(abs(single.control_success.iloc[0]-fm.loc[single.row_id.iloc[0]]));pdiff=float(np.max(np.abs(perm.set_index('row_id').loc[full.row_id].control_success.to_numpy()-p)));adiff=float(np.max(np.abs(aug.set_index('row_id').loc[full.row_id].control_success.to_numpy()-p)));m=module(extracted/'src/entity_context_split.py');prod=ROOT/c['production_dir'];probe=pd.read_csv(prod/'production_probe.csv');profile=pd.read_csv(extracted/'model/split_profile.csv',dtype={'entity_value':str,'context_value':str});px=m.apply_split_profile(probe,profile);corr=m.apply_linear_split(px,extracted/'model/split_residual_meta.npz');probe_diff=float(np.max(np.abs(corr-probe.expected_correction.to_numpy())));script=(extracted/'script.py').read_text()
+ ck('full_output',full.row_id.tolist()==test.row_id.tolist()==saved.row_id.tolist() and full_diff<=1e-12 and np.isfinite(p).all() and ((p>=0)&(p<=1)).all(),{'rows':len(full),'max_diff':full_diff,'finite':bool(np.isfinite(p).all())},{'max_diff':1e-12});ck('independence',max(sd,pdiff,adiff)<=1e-12,{'singleton':sd,'permutation':pdiff,'augmentation':adiff},{'max':1e-12});ck('probe',probe_diff<=1e-12,probe_diff,1e-12);ck('gate_source','regular = ~futures' in script and 'p = np.where(regular, p + split_correction, p)' in script,True);ck('base_preserved',sha(ROOT/c['base_zip'])==c['base_zip_sha256'],sha(ROOT/c['base_zip']),c['base_zip_sha256']);ck('result_checks',all(res['checks'].values()) and res['fail_count']==0,{'checks':res['checks'],'fail_count':res['fail_count']});ck('counts',man['candidate_file_count']==man['zip_member_count']==len(members) and man['dynamic_check_count']==len(res['checks']),[man['candidate_file_count'],man['zip_member_count'],len(members),man['dynamic_check_count'],len(res['checks'])]);ck('scope',res['training_performed'] is False and res['test_read'] is True and res['test_inference_performed'] is True and res['candidate_bundle_created'] is True and res['zip_created'] is True,{k:res[k] for k in ('training_performed','test_read','test_inference_performed','candidate_bundle_created','zip_created')});md=(OUT/'result.md').read_text();ck('markdown',res['status'] in md and res['zip_sha256'] in md,res['status']);fail=[x['name'] for x in checks if not x['pass']];report={'experiment_id':c['experiment_id'],'status':'AUDIT_VERIFIED' if not fail else 'AUDIT_FAIL_REPORT','checked_count':len(checks),'pass_count':len(checks)-len(fail),'fail_count':len(fail),'mismatch_count':len(fail),'failures':fail,'checks':checks,'zip_sha256':sha(target),'zip_size':target.stat().st_size,'candidate_file_count':len(members),'zip_member_count':len(members),'test_rows':len(test),'full_max_diff':full_diff,'singleton_max_diff':sd,'permutation_max_diff':pdiff,'augmentation_max_diff':adiff,'probe_max_diff':probe_diff};rp=OUT/'validation_report.json';rp.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n');att={'experiment_id':c['experiment_id'],'overall_status':report['status'],'submission_status':'READY_FOR_SUBMISSION' if not fail else 'FAIL','checked_count':len(checks),'pass_count':len(checks)-len(fail),'fail_count':len(fail),'mismatch_count':len(fail),'candidate_file_count':len(members),'zip_member_count':len(members),'audit_manifest_sha256':sha(OUT/'audit_manifest.json'),'validation_report_sha256':sha(rp),'validator_sha256':sha(Path(__file__)),'result_sha256':sha(OUT/'result.json'),'inventory_sha256':sha(OUT/'package_inventory.csv'),'zip_sha256':sha(target),'base_zip_sha256':sha(ROOT/c['base_zip']),'test_rows':len(test),'training_performed':False,'test_read':True,'test_inference_performed':True,'candidate_bundle_created':True,'zip_created':True};(OUT/'audit_attestation.json').write_text(json.dumps(att,indent=2)+'\n');print(json.dumps({k:att[k] for k in ('overall_status','submission_status','checked_count','pass_count','fail_count','mismatch_count','candidate_file_count','zip_member_count','zip_sha256')},indent=2));
+ if fail:raise SystemExit(2)
+if __name__=='__main__':main()

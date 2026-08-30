@@ -24,14 +24,25 @@ __pycache__/
 .ipynb_checkpoints/
 
 # ──────────────────────────────────────
-# 모델 파일 (용량이 클 수 있음)
+# 모델 파일 및 대용량 산출물 디렉토리
 # ──────────────────────────────────────
-model/*.pkl
-model/*.joblib
-model/*.bin
-model/*.cbm
-model/*.txt
-model/*.json
+model/
+candidate/
+scratch/
+github_reference/
+*.pkl
+*.joblib
+*.bin
+*.cbm
+*.txt
+*.json
+*.npz
+*.parquet
+*.feather
+!requirements.txt
+!package.json
+!tsconfig.json
+!team_asof_profile.json
 
 # ──────────────────────────────────────
 # 머신러닝 로그 & 임시 디렉토리
@@ -39,7 +50,6 @@ model/*.json
 catboost_info/
 wandb/
 lightning_logs/
-
 
 # ──────────────────────────────────────
 # 출력 파일
@@ -58,3 +68,4 @@ Thumbs.db
 
 # zip 파일
 *.zip
+

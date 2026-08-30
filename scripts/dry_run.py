@@ -25,6 +25,13 @@ from verify_independence import (
     verify_project_independence,
 )
 
+ACTIVE_MODEL_FILES = (
+    "lightgbm_model.txt",
+    "catboost_model.cbm",
+    "feature_columns.json",
+    "ensemble_contract.json",
+)
+
 
 def get_process_memory_mb():
     try:
@@ -117,8 +124,15 @@ def run_benchmark_test(root, script_path, python_executable):
     os.makedirs(bench_data_dir, exist_ok=True)
     os.makedirs(bench_output_dir, exist_ok=True)
 
-    # 모델 파일 복사
-    shutil.copytree(os.path.join(root, "model"), bench_model_dir, dirs_exist_ok=True)
+    # 활성 선택형 모델 파일만 복사해 과거 실험 산출물 혼입을 차단한다.
+    os.makedirs(bench_model_dir, exist_ok=True)
+    for model_filename in ACTIVE_MODEL_FILES:
+        source = os.path.join(root, "model", model_filename)
+        if not os.path.isfile(source):
+            print(f"❌ [벤치마크 실패] 활성 모델 파일이 없습니다: {source}")
+            shutil.rmtree(bench_dir, ignore_errors=True)
+            sys.exit(1)
+        shutil.copy2(source, os.path.join(bench_model_dir, model_filename))
     # script.py 복사
     shutil.copy2(script_path, os.path.join(bench_dir, "script.py"))
 
@@ -128,6 +142,7 @@ def run_benchmark_test(root, script_path, python_executable):
 
     # test.csv 형식으로 가공 (control_success 제거)
     test_df = df_train.drop(columns=["control_success"], errors="ignore")
+    test_df.loc[:, "season"] = 2025
     bench_test_path = os.path.join(bench_data_dir, "test.csv")
     test_df.to_csv(bench_test_path, index=False, encoding="utf-8-sig")
 

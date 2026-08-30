@@ -22,14 +22,14 @@ def check_python() -> bool:
 
 def check_packages() -> bool:
     required = [
-        "joblib",
-        "numpy",
-        "pandas",
-        "sklearn",
-    ]
-    optional = [
         "catboost",
         "lightgbm",
+        "numpy",
+        "pandas",
+    ]
+    optional = [
+        "joblib",
+        "sklearn",
         "xgboost",
         "scipy",
         "optuna",
@@ -68,9 +68,8 @@ def check_submit_runtime() -> bool:
         "python": "3.11.15",
         "pandas": "2.0.3",
         "numpy": "1.26.4",
-        "sklearn": "1.8.0",
-        "joblib": "1.5.3",
-        "scipy": "1.15.3",
+        "lightgbm": "4.7.0",
+        "catboost": "1.2.10",
     }
 
     print("\n[CHECK] Python 3.11 제출 검증 환경:")
@@ -79,10 +78,9 @@ def check_submit_runtime() -> bool:
         return False
 
     code = (
-        "import sys,pandas,numpy,sklearn,joblib,scipy;"
+        "import sys,pandas,numpy,lightgbm,catboost;"
         "print('|'.join([sys.version.split()[0],pandas.__version__,"
-        "numpy.__version__,sklearn.__version__,joblib.__version__,"
-        "scipy.__version__]))"
+        "numpy.__version__,lightgbm.__version__,catboost.__version__]))"
     )
     result = subprocess.run(
         [str(runtime), "-c", code],
@@ -104,6 +102,23 @@ def check_submit_runtime() -> bool:
     return all_ok
 
 
+def check_dependency_metadata() -> bool:
+    """제출 환경의 설치 패키지 metadata 의존성이 완결됐는지 확인."""
+    runtime = ROOT / ".venv-submit" / "bin" / "python"
+    print("\n[CHECK] 제출 환경 pip dependency metadata:")
+    result = subprocess.run(
+        [str(runtime), "-m", "pip", "check"],
+        capture_output=True,
+        text=True,
+    )
+    details = (result.stdout or result.stderr).strip()
+    if result.returncode == 0:
+        print(f"  ✅ {details}")
+        return True
+    print(f"  ❌ {details}")
+    return False
+
+
 def check_paths() -> bool:
     required_files = [
         "data/train.csv",
@@ -111,6 +126,11 @@ def check_paths() -> bool:
         "data/sample_submission.csv",
         "requirements_submit.txt",
         "script.py",
+        "model/lightgbm_model.txt",
+        "model/catboost_model.cbm",
+        "model/feature_columns.json",
+        "model/ensemble_contract.json",
+        "output/candidates/selective_activation.json",
         "scripts/build_submission.py",
         "scripts/dry_run.py",
         "scripts/verify_features.py",
@@ -175,6 +195,7 @@ def main() -> None:
         check_python(),
         check_packages(),
         check_submit_runtime(),
+        check_dependency_metadata(),
         check_paths(),
     ]
 

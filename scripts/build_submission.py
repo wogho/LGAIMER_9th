@@ -6,20 +6,24 @@ build_submission.py — 제출용 zip 빌드 및 격리 환경 E2E 무결성 검
   python scripts/build_submission.py [--name EXP_NAME]
 
 생성:
-  output/submit_{EXP_NAME}_{timestamp}.zip
+  output/submit_{EXP_NAME}.zip
     ├── script.py
     ├── requirements.txt
     └── model/
-        └── (학습된 모델 파일들)
+        ├── lightgbm_model.txt
+        ├── catboost_model.cbm
+        └── feature_columns.json
+        └── ensemble_contract.json
 """
 import argparse
+import hashlib
+import json
 import os
 import sys
 import zipfile
 import shutil
 import tempfile
 import subprocess
-from datetime import datetime
 
 from verify_independence import (
     IndependenceError,
@@ -27,32 +31,52 @@ from verify_independence import (
     verify_submission_independence,
 )
 
+REQUIRED_MODEL_FILES = (
+    "lightgbm_model.txt",
+    "catboost_model.cbm",
+    "feature_columns.json",
+    "ensemble_contract.json",
+)
+EXPECTED_ARCHIVE_FILES = {
+    "script.py",
+    "requirements.txt",
+    "model/lightgbm_model.txt",
+    "model/catboost_model.cbm",
+    "model/feature_columns.json",
+    "model/ensemble_contract.json",
+}
+
+
+def sha256_file(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as file:
+        for chunk in iter(lambda: file.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def add_deterministic(zf, archive_name, source_path):
+    info = zipfile.ZipInfo(archive_name, date_time=(2020, 1, 1, 0, 0, 0))
+    info.compress_type = zipfile.ZIP_DEFLATED
+    info.create_system = 3
+    info.external_attr = 0o100644 << 16
+    with open(source_path, "rb") as source:
+        zf.writestr(info, source.read())
+
 
 def validate_zip_structure(zip_path):
     """대회 규정에 명시된 submit.zip 디렉토리 구조 검증"""
-    allowed_roots = {"model/", "script.py", "requirements.txt"}
     errors = []
 
     with zipfile.ZipFile(zip_path, "r") as zf:
         namelist = zf.namelist()
-        if "script.py" not in namelist:
-            errors.append("최상위에 script.py가 없습니다.")
-        if "requirements.txt" not in namelist:
-            errors.append("최상위에 requirements.txt가 없습니다.")
-
-        has_model = any(name.startswith("model/") for name in namelist)
-        if not has_model:
-            errors.append("model/ 디렉토리 또는 모델 가중치 파일이 없습니다.")
-
-        # 최상위 불법 폴더/파일 검사 (예: src/, notebooks/, .git 등 금지)
-        for name in namelist:
-            root_item = name.split("/")[0]
-            if "/" in name:
-                if root_item != "model":
-                    errors.append(f"허용되지 않은 최상위 디렉토리 발견: '{root_item}/' (대회 규정 위반)")
-            else:
-                if root_item not in {"script.py", "requirements.txt"}:
-                    errors.append(f"허용되지 않은 최상위 파일 발견: '{root_item}'")
+        actual = set(namelist)
+        missing = sorted(EXPECTED_ARCHIVE_FILES - actual)
+        unexpected = sorted(actual - EXPECTED_ARCHIVE_FILES)
+        if missing:
+            errors.append(f"필수 제출 파일 누락: {missing}")
+        if unexpected:
+            errors.append(f"허용 목록 외 제출 파일 발견: {unexpected}")
 
     return errors
 
@@ -141,7 +165,7 @@ def test_zip_in_sandbox(
 
 def main():
     parser = argparse.ArgumentParser(description="Build and verify submission zip")
-    parser.add_argument("--name", default="exp", help="Experiment name tag")
+    parser.add_argument("--name", default="final_selective", help="Experiment name tag")
     parser.add_argument("--script", default="script.py", help="Inference script path")
     parser.add_argument("--requirements", default="requirements_submit.txt", help="Requirements file path (default: lightweight submit version)")
     parser.add_argument("--model-dir", default="model", help="Model directory")
@@ -169,8 +193,10 @@ def main():
         errors.append(f"script.py 없음: {script_path}")
     if not os.path.isfile(req_path):
         errors.append(f"requirements.txt 없음: {req_path}")
-    if not os.path.isdir(model_dir) or not os.listdir(model_dir):
-        errors.append(f"model/ 디렉토리가 비어있거나 없음: {model_dir}")
+    for model_filename in REQUIRED_MODEL_FILES:
+        model_path = os.path.join(model_dir, model_filename)
+        if not os.path.isfile(model_path):
+            errors.append(f"필수 모델 파일 없음: {model_path}")
 
     if errors:
         print("❌ 제출 파일 빌드 실패:")
@@ -178,24 +204,43 @@ def main():
             print(f"  - {e}")
         sys.exit(1)
 
-    # 2. Zip 생성
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    zip_name = f"submit_{args.name}_{ts}.zip"
+    activation_record_path = os.path.join(
+        root, "output", "candidates", "selective_activation.json"
+    )
+    if not os.path.isfile(activation_record_path):
+        print(f"❌ 활성 전환 기록 없음: {activation_record_path}")
+        sys.exit(1)
+    with open(activation_record_path, "r", encoding="utf-8") as file:
+        activation_record = json.load(file)
+    if activation_record.get("active_submission_sync") is not True:
+        print("❌ 선택형 후보가 활성 상태가 아닙니다.")
+        sys.exit(1)
+
+    # 2. 고정 순서·timestamp·권한으로 결정론적 Zip 생성
+    safe_name = "".join(
+        character if character.isalnum() or character in {"-", "_"} else "_"
+        for character in args.name
+    )
+    zip_name = f"submit_{safe_name}.zip"
     zip_path = os.path.join(output_dir, zip_name)
     os.makedirs(output_dir, exist_ok=True)
 
-    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
-        zf.write(script_path, "script.py")
-        zf.write(req_path, "requirements.txt")
-
-        for dirpath, dirnames, filenames in os.walk(model_dir):
-            for fn in filenames:
-                # 임시 파일이나 숨김 파일 제외
-                if fn.startswith(".") or fn.endswith(".tmp"):
-                    continue
-                full_path = os.path.join(dirpath, fn)
-                arcname = os.path.join("model", os.path.relpath(full_path, model_dir))
-                zf.write(full_path, arcname)
+    sources = {
+        "script.py": script_path,
+        "requirements.txt": req_path,
+    }
+    sources.update(
+        {
+            f"model/{model_filename}": os.path.join(model_dir, model_filename)
+            for model_filename in REQUIRED_MODEL_FILES
+        }
+    )
+    if set(sources) != EXPECTED_ARCHIVE_FILES:
+        print("❌ 활성 제출 source 목록이 화이트리스트와 다릅니다.")
+        sys.exit(1)
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        for archive_name in sorted(sources):
+            add_deterministic(zf, archive_name, sources[archive_name])
 
     size_mb = os.path.getsize(zip_path) / 1e6
     print(f"✅ 제출 파일 생성 완료: {zip_path}")
@@ -205,12 +250,25 @@ def main():
         print(f"   ❌ 경고: 10GB 제한 초과! ({size_mb:.0f} MB)")
         sys.exit(1)
 
+    zip_sha256 = sha256_file(zip_path)
+    expected_handover_sha256 = activation_record.get("candidate_archive_sha256")
+    if zip_sha256 != expected_handover_sha256:
+        print(
+            "❌ 활성 최종 ZIP이 검증·활성화한 후보 ZIP과 다릅니다: "
+            f"{zip_sha256} != {expected_handover_sha256}"
+        )
+        os.remove(zip_path)
+        sys.exit(1)
+    print(f"   SHA-256: {zip_sha256}")
+    print("   ✅ handover 후보 ZIP과 byte-identical")
+
     # 3. Zip 구조 검사
     struct_errors = validate_zip_structure(zip_path)
     if struct_errors:
         print("❌ [규격 오류] submit.zip 구조가 대회 규칙과 일치하지 않습니다:")
         for err in struct_errors:
             print(f"  - {err}")
+        os.remove(zip_path)
         sys.exit(1)
 
     print("\n   📦 Zip 구조 (검증 완료):")
@@ -229,6 +287,24 @@ def main():
         print("❌ 제출 검증 실패! 생성한 zip을 삭제합니다.")
         os.remove(zip_path)
         sys.exit(1)
+
+    build_record = {
+        "schema_version": 1,
+        "experiment_id": "ENS-CATF-LGBMCATR5050-FINAL-ACTIVE",
+        "archive_path": os.path.relpath(zip_path, root),
+        "archive_sha256": zip_sha256,
+        "archive_size_bytes": os.path.getsize(zip_path),
+        "archive_files": sorted(EXPECTED_ARCHIVE_FILES),
+        "handover_candidate_byte_identical": True,
+        "sandbox_e2e_pass": True,
+        "row_independence_pass": True,
+        "active_submission_sync": True,
+    }
+    build_record_path = os.path.join(output_dir, "final_selective_build.json")
+    with open(build_record_path, "w", encoding="utf-8") as file:
+        json.dump(build_record, file, ensure_ascii=False, indent=2)
+        file.write("\n")
+    print(f"   Build record: {build_record_path}")
 
     print("\n" + "=" * 60)
     print(f"  🎉 최종 제출 zip 빌드 및 무결성 검증 완료: {zip_name}")

@@ -27,6 +27,12 @@ import pandas as pd
 ID_COL = "row_id"
 TARGET_COL = "control_success"
 EXPECTED_COLUMNS = [ID_COL, TARGET_COL]
+SELECTIVE_MODEL_FILES = {
+    "lightgbm_model.txt",
+    "catboost_model.cbm",
+    "feature_columns.json",
+    "ensemble_contract.json",
+}
 HIGH_RISK_CALLS = {
     "cumcount",
     "cummax",
@@ -335,7 +341,27 @@ def verify_project_independence(
     with tempfile.TemporaryDirectory(prefix="lg_row_independence_") as temp_dir:
         sandbox = Path(temp_dir)
         shutil.copy2(root / "script.py", sandbox / "script.py")
-        shutil.copytree(root / "model", sandbox / "model")
+        sandbox_model = sandbox / "model"
+        sandbox_model.mkdir()
+        source_model = root / "model"
+        if (source_model / "ensemble_contract.json").is_file():
+            missing = [
+                name
+                for name in sorted(SELECTIVE_MODEL_FILES)
+                if not (source_model / name).is_file()
+            ]
+            if missing:
+                raise IndependenceError(
+                    f"선택형 활성 모델 파일이 누락됐습니다: {missing}"
+                )
+            for name in sorted(SELECTIVE_MODEL_FILES):
+                shutil.copy2(source_model / name, sandbox_model / name)
+        else:
+            for name in ("model.txt", "feature_columns.json"):
+                source = source_model / name
+                if not source.is_file():
+                    raise IndependenceError(f"활성 모델 파일이 없습니다: {source}")
+                shutil.copy2(source, sandbox_model / name)
         return verify_submission_independence(
             sandbox,
             test_path,
@@ -358,18 +384,52 @@ def main() -> None:
     parser.add_argument("--atol", type=float, default=1e-12)
     parser.add_argument("--rtol", type=float, default=1e-12)
     parser.add_argument("--python", default=None, help="추론에 사용할 Python 실행 파일")
+    parser.add_argument(
+        "--train-probe-rows",
+        type=int,
+        default=0,
+        help="공식 train 선두 N행을 정답 제거·2025 시즌화해 확대 독립성 검사",
+    )
     args = parser.parse_args()
 
     try:
-        verify_project_independence(
-            args.root,
-            args.test_path,
-            sample_rows=args.sample_rows,
-            timeout=args.timeout,
-            atol=args.atol,
-            rtol=args.rtol,
-            python_executable=args.python,
-        )
+        if args.train_probe_rows:
+            if args.train_probe_rows < 2:
+                raise IndependenceError("train-probe-rows는 2 이상이어야 합니다")
+            root = Path(args.root).resolve()
+            train_path = root / "data" / "train.csv"
+            probe = pd.read_csv(
+                train_path,
+                nrows=args.train_probe_rows,
+                encoding="utf-8-sig",
+            ).drop(columns=[TARGET_COL], errors="ignore")
+            if len(probe) != args.train_probe_rows:
+                raise IndependenceError(
+                    f"확대 검사 행이 부족합니다: {len(probe)} != {args.train_probe_rows}"
+                )
+            probe.loc[:, "season"] = 2025
+            with tempfile.TemporaryDirectory(prefix="lg_independence_probe_") as temp_dir:
+                probe_path = Path(temp_dir) / "test_probe.csv"
+                probe.to_csv(probe_path, index=False, encoding="utf-8-sig")
+                verify_project_independence(
+                    root,
+                    probe_path,
+                    sample_rows=args.train_probe_rows,
+                    timeout=args.timeout,
+                    atol=args.atol,
+                    rtol=args.rtol,
+                    python_executable=args.python,
+                )
+        else:
+            verify_project_independence(
+                args.root,
+                args.test_path,
+                sample_rows=args.sample_rows,
+                timeout=args.timeout,
+                atol=args.atol,
+                rtol=args.rtol,
+                python_executable=args.python,
+            )
     except (IndependenceError, subprocess.TimeoutExpired) as error:
         print(f"❌ 행 독립성 검증 실패: {error}")
         sys.exit(1)
