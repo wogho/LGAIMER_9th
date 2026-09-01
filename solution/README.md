@@ -1,4 +1,4 @@
-# 10. 온라인 해커톤(Phase 2) 최종 솔루션 발표자료 요약 📊
+# 08. 온라인 해커톤(Phase 2) 최종 솔루션 발표자료 요약 📊
 
 > **대회명**: LG Aimers 9기 — 야구 제구(Control) 성공 확률 예측 AI (Phase 2)  
 > **최종 제출 패키지**: `submit_ref4_super113A.zip` (`REF4-DISJOINT-EB-113A`)  
