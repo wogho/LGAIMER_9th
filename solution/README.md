@@ -1,8 +1,6 @@
 # 10. 온라인 해커톤(Phase 2) 최종 솔루션 발표자료 요약 📊
 
 > **대회명**: LG Aimers 9기 — 야구 제구(Control) 성공 확률 예측 AI (Phase 2)  
-> **팀명**: 나란차  
-> **제출자**: 김재호  
 > **최종 제출 패키지**: `submit_ref4_super113A.zip` (`REF4-DISJOINT-EB-113A`)  
 > **공식 최종 점수**: **`1121.9039933605`** 점 (Brier Skill Score)  
 > **공식 최종 등수**: **Public Leaderboard 180위**  
@@ -23,7 +21,6 @@
                            투구 직전 정보로 제구 성공 확률을 읽다
       3-Tier Multi-Family GBDT Super Ensemble & Zero-Centered Adaptive Hierarchical Gate
 ========================================================================================
-• 제출자: 김재호  |  팀명: 나란차
 • 공식 최종 점수: 1121.9039933605점  |  Public 180위
 • 최종 채택 모델: submit_ref4_super113A.zip (REF4-DISJOINT-EB-113A)
 • 학습 데이터: 2019–2024 공식 전체 데이터 (1,475,092행)  ·  예측 대상: 2025 미래 시즌
@@ -40,7 +37,7 @@
 | 핵심 요소 | 정의 및 명세 | 설계 의의 |
 | :--- | :--- | :--- |
 | **TARGET** | `control_success` (0~1 실수 확률) | 각 투구의 제구 성공 확률을 연속형 실수값으로 출력 |
-| **METRIC** | **Brier Skill Score (BSS)** | $1 - \frac{\text{Brier}}{\text{Base\_Brier}}$, $0 \le p \le 1$ 구간의 확률 오차를 직접 페널티로 평가 |
+| **METRIC** | **Brier Skill Score (BSS)** | $1 - \frac{\text{Brier}_{\text{model}}}{\text{Brier}_{\text{base}}}$, $0 \le p \le 1$ 구간의 확률 오차를 직접 페널티로 평가 |
 | **UNIT** | **1 Pitch = 1 Row** | 평가 데이터의 각 행은 100% 완전 독립적으로 예측되어야 함 |
 
 #### 3대 핵심 설계 원칙
@@ -64,7 +61,7 @@ flowchart LR
 ```
 
 - **Random K-Fold 배제 이유**: 야구 데이터에서 랜덤 K-Fold는 동일 시즌 내 투수/타자의 패턴이 훈련/검증셋에 섞여 심각한 미래 누수(Lookahead Leakage)를 유발함.
-- **Strict Temporal Split**: $T_{\text{train}} < T_{\text{val}}$ 조건을 엄격히 준수하여 2024 홀드아웃(253,507행)과 2023/2024 Forward OOF에서 실제 검증된 개선만 승격.
+- **Strict Temporal Split**: `T_train < T_val` 조건을 엄격히 준수하여 2024 홀드아웃(253,507행)과 2023/2024 Forward OOF에서 실제 검증된 개선만 승격.
 
 ---
 
@@ -203,7 +200,7 @@ flowchart TD
 
 > **"복잡한 트릭이나 누수 위험이 있는 기법을 배제하고, 엄격한 시계열 검증과 완전한 행 독립성, 견고한 3-Tier GBDT 앙상블로 이뤄낸 1121.90점의 완주"**
 
-1. **시간 인식(Time-Aware)**: 미래 시즌을 예측하는 야구 도메인의 특성에 맞춰 $T_{\text{train}} < T_{\text{val}}$ Forward 검증을 철저히 고수함.
+1. **시간 인식(Time-Aware)**: 미래 시즌을 예측하는 야구 도메인의 특성에 맞춰 `T_train < T_val` Forward 검증을 철저히 고수함.
 2. **행 독립성(Row-Independent)**: 단일 행 단위 독립 피처링으로 오차 `0.000e+00`의 완벽한 추론 무결성 입증.
 3. **이종 앙상블(Multi-Family Super Blend)**: CatBoost + LightGBM + XGBoost + Disjoint Matchup EB의 유기적 결합으로 Brier 손실 최소화.
 4. **최종 성과**: 공식 리더보드 **`1121.9039933605` 점 / Public 180위** 달성으로 성공적인 대회 완주.

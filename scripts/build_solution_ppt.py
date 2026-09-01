@@ -124,7 +124,7 @@ def add_header(slide, number, eyebrow, title, subtitle=None):
 
 
 def add_footer(slide, number):
-    add_text(slide, "LG Aimers 9기 · 제구 성공 확률 예측 · 팀 나란차", 0.55, 7.15, 6.0, 0.20, size=8, color="74809A")
+    add_text(slide, "LG Aimers 9기 · 제구 성공 확률 예측 · LG Aimers 9기", 0.55, 7.15, 6.0, 0.20, size=8, color="74809A")
     add_text(slide, f"{number:02d}", 12.30, 7.15, 0.45, 0.20, size=8, color="74809A", align=PP_ALIGN.RIGHT)
 
 
@@ -163,7 +163,7 @@ def build_deck():
     add_text(slide, "투구 직전 정보로\n제구 성공 확률을 읽다", 0.63, 1.35, 7.45, 1.75, size=36, bold=True)
     add_text(slide, "3-Tier Multi-Family GBDT Super Ensemble & Adaptive Hierarchical Gate\n최종 제출: submit_ref4_super113A.zip", 0.68, 3.38, 7.55, 0.78, size=15, color=MUTED)
     add_rect(slide, 0.65, 4.45, 7.10, 0.04, TEAL)
-    add_text(slide, "제출자  김재호   |   팀명  나란차", 0.68, 4.85, 6.6, 0.36, size=13, color=INK, bold=True)
+    add_text(slide, "LG AIMERS 9기 PHASE 2", 0.68, 4.85, 6.6, 0.36, size=13, color=INK, bold=True)
     add_text(slide, "공식 최종 점수: 1121.9039933605점  |  Public 180위", 0.68, 5.30, 7.1, 0.34, size=14, color=GOLD, bold=True)
     add_text(slide, "학습 데이터: 2019–2024 (1.47M행)  ·  예측 대상: 2025  ·  Strict Temporal Validation", 0.68, 5.80, 7.3, 0.30, size=11, color=MUTED)
     add_rect(slide, 0.65, 6.35, 7.10, 0.55, PANEL, radius=True)
@@ -442,7 +442,7 @@ def build_deck():
     add_text(slide, "아니요", 9.08, 4.87, 2.76, 0.66, size=34, color=CORAL, bold=True, align=PP_ALIGN.CENTER)
     add_text(slide, "본 발표자료는 온라인 해커톤(Phase 2) 최종 솔루션 설명 및 코드 검증용 제출 자료입니다.", 0.96, 5.62, 8.25, 0.28, size=11, color=MUTED)
     add_text(slide, "THANK YOU", 0.63, 6.72, 2.2, 0.27, size=10, color=TEAL, bold=True)
-    add_text(slide, "제출자  김재호   |   팀명  나란차   |   최종 점수  1121.9039933605점 (180위)", 6.00, 6.69, 6.46, 0.28, size=10, color=MUTED, bold=True, align=PP_ALIGN.RIGHT)
+    add_text(slide, "LG AIMERS 9기 PHASE 2   |   최종 점수  1121.9039933605점 (180위)", 6.00, 6.69, 6.46, 0.28, size=10, color=MUTED, bold=True, align=PP_ALIGN.RIGHT)
     add_footer(slide, 10)
 
     for idx, s in enumerate(prs.slides, start=1):
