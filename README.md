@@ -3,7 +3,6 @@
 > **최종 제출 모델**: `submit_ref4_super113A.zip` (`REF4-DISJOINT-EB-113A`)  
 > **공식 최종 점수**: **`1121.9039933605`** 점 (Brier Skill Score)  
 > **공식 최종 등수**: **Public Leaderboard 180위**  
-> **Phase 3 오프라인 해커톤 참가 여부**: 아니요 (온라인 Phase 2 솔루션 검증용 제출)  
 > **GitHub Repository**: [https://github.com/wogho/LGAIMER.git](https://github.com/wogho/LGAIMER.git)
 
 ---
@@ -116,6 +115,7 @@ flowchart TD
 ├── 07_1000점_달성계획.md               # 1000점 돌파 및 1121점 완주 계획서
 ├── 08_Gemini_작업위임서.md             # 협업 및 작업 위임 아카이브
 ├── 10_솔루션_발표자료_요약.md           # PPT/PDF 발표자료 전 내용 마크다운 기록
+├── 11_아쉬운점_및_후기.md              # L4 GPU 도입 지연 및 최종 기술 회고
 ├── colab.md, colab_gpu_126.md        # Colab L4 GPU 가속 환경 실험 가이드
 ├── README.md                         # 메인 프로젝트 안내서 (현재 파일)
 ├── requirements.txt                  # Python 의존성 명시
