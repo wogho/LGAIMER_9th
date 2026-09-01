@@ -3,7 +3,8 @@
 > **최종 제출 모델**: `submit_ref4_super113A.zip` (`REF4-DISJOINT-EB-113A`)  
 > **공식 최종 점수**: **`1121.9039933605`** 점 (Brier Skill Score)  
 > **공식 최종 등수**: **Public Leaderboard 180위**  
-> **GitHub Repository**: [https://github.com/wogho/LGAIMER.git](https://github.com/wogho/LGAIMER.git)
+> **GitHub Repository**: [https://github.com/wogho/LGAIMER_9th.git](https://github.com/wogho/LGAIMER_9th.git)  
+> **DACON Competition**: [https://dacon.io/competitions/official/236743/overview/description](https://dacon.io/competitions/official/236743/overview/description)
 
 ---
 
@@ -11,7 +12,9 @@
 
 - **대회 주제**: KBO 투구 직전 정보(경기 상황, 카운트, 주자, 투수/타자/팀 이력 등)를 바탕으로 해당 투구의 **제구 성공 확률(`control_success`)** 예측
 - **평가 지표**: **Brier Skill Score (BSS)**
-  $$\text{BSS} = 1 - \frac{\text{Brier}_{\text{model}}}{\text{Brier}_{\text{base}}} = 1 - \frac{\frac{1}{N} \sum_{i=1}^N (y_i - p_i)^2}{r(1 - r)}$$
+
+$$\text{BSS} = 1 - \frac{\text{Brier}_{\text{model}}}{\text{Brier}_{\text{base}}} = 1 - \frac{\frac{1}{N} \sum_{i=1}^N (y_i - p_i)^2}{r(1 - r)}$$
+
 - **최우선 원칙**:
   1. **Strict Temporal Forward Validation**: 미래 시즌을 예측하는 야구 도메인의 특성에 맞춰 랜덤 K-Fold를 전면 배제하고, `T_train < T_val` 시간 격리 분할만을 채택.
   2. **100% 완전한 행 독립성 (Pure Row Independence)**: `test.csv`의 다른 행을 참조하는 모든 집계/후처리(`groupby`, `rolling`, `rank`, `distribution scaling`)를 원천 차단하고 오직 단일 행의 입력값만으로 완결 추론.

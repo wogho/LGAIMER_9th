@@ -36,7 +36,7 @@
 | 핵심 요소 | 정의 및 명세 | 설계 의의 |
 | :--- | :--- | :--- |
 | **TARGET** | `control_success` (0~1 실수 확률) | 각 투구의 제구 성공 확률을 연속형 실수값으로 출력 |
-| **METRIC** | **Brier Skill Score (BSS)** | $1 - \frac{\text{Brier}_{\text{model}}}{\text{Brier}_{\text{base}}}$, $0 \le p \le 1$ 구간의 확률 오차를 직접 페널티로 평가 |
+| **METRIC** | **Brier Skill Score (BSS)** | $\text{BSS} = 1 - \frac{\text{Brier}_{\text{model}}}{\text{Brier}_{\text{base}}}$, $0 \le p \le 1$ 구간의 확률 오차 직접 평가 |
 | **UNIT** | **1 Pitch = 1 Row** | 평가 데이터의 각 행은 100% 완전 독립적으로 예측되어야 함 |
 
 #### 3대 핵심 설계 원칙
