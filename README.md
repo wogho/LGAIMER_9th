@@ -1,8 +1,9 @@
 # ⚾ LG Aimers 9기 — 야구 제구 성공 확률 예측 AI (Phase 2)
 
-> **최종 제출 모델**: `submit_ref4_super113A.zip` (`REF4-DISJOINT-EB-113A`)  
+> **최종 제출 모델**: [`submit_ref4_super113A.zip`](https://github.com/wogho/LGAIMER_9th/releases/tag/v1.13A) (`REF4-DISJOINT-EB-113A`)  
 > **공식 최종 점수**: **`1121.9039933605`** 점 (Brier Skill Score)  
 > **공식 최종 등수**: **Public Leaderboard 180위**  
+> **GitHub Release (ZIP 다운로드)**: [https://github.com/wogho/LGAIMER_9th/releases/tag/v1.13A](https://github.com/wogho/LGAIMER_9th/releases/tag/v1.13A)  
 > **GitHub Repository**: [https://github.com/wogho/LGAIMER_9th.git](https://github.com/wogho/LGAIMER_9th.git)  
 > **DACON Competition**: [https://dacon.io/competitions/official/236743/overview/description](https://dacon.io/competitions/official/236743/overview/description)
 
