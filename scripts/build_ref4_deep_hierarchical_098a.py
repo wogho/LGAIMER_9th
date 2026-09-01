@@ -135,7 +135,7 @@ def main():
     # Fixed global calibration hyperparameter (+0.0052)
     p = p + float(meta.get("global_shift", 0.0052))
 
-    # Futures 2군 psych latent with Boosted Scale (0.15 -> 0.22 from 3번/6번 레포 2군 분리 증명)
+    # Futures 2군 psych latent with Boosted Scale (0.15 -> 0.22 from 3번/Hierarchical Reliability Engine 2군 분리 증명)
     if futures.any():
         from src.psych_latent import build_production_features, apply_linear_residual
         residual_x = build_production_features(

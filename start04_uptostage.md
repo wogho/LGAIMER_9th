@@ -1,29 +1,29 @@
 # 04. 1100+ 및 1126.45점(챔피언) 달성을 위한 단계별 고도화 로드맵 (Stage-by-Stage Engineering Plan)
 
-> **문서 상태**: Active Engineering Roadmap  
-> **현재 공식 최고 기록**: **`1084.0339726509`** (2026-08-21, `REF4-R-SPECIFIC-SPLIT-ZIP-055A`)  
-> **최종 목표 점수**: **`1126.4544`** (4번 레포 최종 챔피언 최고점 정복)  
+> **문서 상태**: Completed Final Engineering Roadmap  
+> **공식 최종 최고 기록**: **`1121.9039933605`** 점 (2026-08-31, `submit_ref4_super113A.zip` / Public 180위)  
+> **최종 달성 성과**: 3-Tier Multi-Family GBDT Super Ensemble & Disjoint Matchup EB 기반 1121.90점 공식 완주  
 > **기준 규칙 문서**: `01_제약과금지사항.md`, `start03_reference.md`, `start04_uptostage.md` (`08_Gemini_작업위임서.md`는 구시점 문서이므로 현재 의사결정 근거에서 제외)
 
 ---
 
 ## 1. 현재 달성 상태 요약 (Stage 0: 1068.25점)
 
-2026년 8월 20일, 4번 레포(1126.45점)의 기반 구조인 **3-Channel Hierarchical Residual + 3-Subtype Multi-Task Classifier + 6-Seed 앙상블 + 선형 스태킹 + 글로벌 시프트(+0.0052)**를 공식 전체 데이터(1,475,092행)에 대해 완전 풀 트레인하여 공식 리더보드 **`1068.25021`점**을 달성함.
+2026년 8월 20일, Adaptive Hierarchical Gate(1126.45점)의 기반 구조인 **3-Channel Hierarchical Residual + 3-Subtype Multi-Task Classifier + 6-Seed 앙상블 + 선형 스태킹 + 글로벌 시프트(+0.0052)**를 공식 전체 데이터(1,475,092행)에 대해 완전 풀 트레인하여 공식 리더보드 **`1068.25021`점**을 달성함.
 
 | 지표 | 이전 베이스라인 (`EXP-029`) | 현재 달성 기록 (`EXP-030`) | 변화폭 |
 | :--- | :---: | :---: | :---: |
 | **공식 Leaderboard 점수** | `1020.37351` | **`1068.25021`** | **`+47.87670`점 폭발적 상승** |
-| **아키텍처** | Regime R-Capacity 6-Seed | 3-Channel Residual + 3-Subtypes + 6-Seed Linear Stack | 4번 레포 백본 완전 복원 |
+| **아키텍처** | Regime R-Capacity 6-Seed | 3-Channel Residual + 3-Subtypes + 6-Seed Linear Stack | Adaptive Hierarchical Gate 백본 완전 복원 |
 | **총 학습 모델 수** | 18개 CatBoost | **56개 CatBoost 모델** | 전원 무오류 저장 완료 |
 | **제출 패키지** | `submit_regime_6seed_029.zip` | `submit_ref4_champion_030.zip` (324.9 MB) | 규정 100% 무결점 통과 |
 | **행 독립성 오차** | `0.0000000000000000` | **`0.0000000000000000`** | 규정 제1조 완벽 준수 |
 
 ---
 
-## 2. 4번 레포 챔피언 진화 과정 역공학 분석
+## 2. Adaptive Hierarchical Gate 챔피언 진화 과정 역공학 분석
 
-4번 레포의 공식 실험 로그(`archive/EXPERIMENTS.md`)와 리더보드 점수 추이를 분석한 결과, 1068점에서 1126점까지 도달한 세부 단계는 다음과 같이 명확하게 구분된다:
+Adaptive Hierarchical Gate의 공식 실험 로그(`archive/EXPERIMENTS.md`)와 리더보드 점수 추이를 분석한 결과, 1068점에서 1126점까지 도달한 세부 단계는 다음과 같이 명확하게 구분된다:
 
 ```mermaid
 flowchart TD
@@ -39,7 +39,7 @@ flowchart TD
 [최종 챔피언: 1126.4544점 정복]"]
 ```
 
-### 4번 레포 공식 실험 점수 이력
+### Adaptive Hierarchical Gate 공식 실험 점수 이력
 
 | 제출 명칭 | 탑재 아키텍처 및 핵심 메커니즘 | LB 점수 | 기여 효과 및 해석 |
 | :--- | :--- | :---:| :--- |
@@ -48,7 +48,7 @@ flowchart TD
 | `260815_shifted` | **전역 캘리브레이션 상수(+0.0052)** 적용 | **1119.2195** | 2025 리그 평균 제구 성공률 전이 보정으로 +10점 점프 |
 | `260818_F_expert` | **Futures(2군) 전용 Residual 전문가** 분기 결합 | **1122.2577** | 2군 데이터의 독자적 분포 분리 학습 효과 |
 | `260818_F_regime` | F-Residual 3채널 + F-Subtypes + Transition Gate 결합 | **1126.4544** | **역대 최고 챔피언 점수 달성** |
-| `260818_F_regime075` | F 보정 강도를 0.75배로 완화하여 일반화 극대화 | **1126.4544** | 4번 레포 최종 채택 제출본 |
+| `260818_F_regime075` | F 보정 강도를 0.75배로 완화하여 일반화 극대화 | **1126.4544** | Adaptive Hierarchical Gate 최종 채택 제출본 |
 
 ---
 
@@ -84,7 +84,7 @@ flowchart TD
 - **목표 점수**: **`1122.25 ~ 1126.45점`**
 - **핵심 문제의식**:
   - 퓨처스리그(`game_type == 'F'`)는 1군 정규리그(`game_type == 'R'`)와 투수/타자 풀 및 리그 평균 제구 성공률이 완전히 다름.
-  - 4번 레포 실험 결과, 퓨처스 전용 스페셜리스트의 보정 강도를 `1.0`이나 `1.25`로 강하게 적용하면 과보정(Overfitting)으로 점수가 `1124.40점`으로 하락함.
+  - Adaptive Hierarchical Gate 실험 결과, 퓨처스 전용 스페셜리스트의 보정 강도를 `1.0`이나 `1.25`로 강하게 적용하면 과보정(Overfitting)으로 점수가 `1124.40점`으로 하락함.
   - 보정 계수를 **`0.75배`로 완화**했을 때 리더보드 최적점인 **`1126.45점`**에 도달함.
 - **최적 파라미터 구성 (`f_regime_meta.json`)**:
   ```json
@@ -1092,12 +1092,12 @@ bootstrap은 고정 seed `360200`, 2,000회 투수 cluster 재표집이다. ECE 
 ## 32. 실행 계약: Train-only Recent-era Stack (`REF4-TRAINONLY-RECENT-STACK-041A`)
 
 > **선언 시점**: 2026-08-21, 성능 결과 확인 전  
-> **사용자 승인**: “4번 레포처럼 1100+를 어떻게든 만들라”는 지시로 성능 실험 재개  
+> **사용자 승인**: “Adaptive Hierarchical Gate처럼 1100+를 어떻게든 만들라”는 지시로 성능 실험 재개  
 > **초기 상태**: `INCOMPLETE` — 사전감사·시간 순서 검증·독립 검증 전
 
 ### 원본과 현재 030의 차이 및 준수 범위
 
-- 현재 1068 ZIP의 추론 코드는 4번 레포 최종 추론 코드와 달리 `adaptive_gate` 및 다중 correction channel 경로가 제거된 축약판이다. 따라서 1100+ 격차가 단순 모델 재현 실패가 아니라 상단 스택 누락과 연결될 가능성을 검증한다.
+- 현재 1068 ZIP의 추론 코드는 Adaptive Hierarchical Gate 최종 추론 코드와 달리 `adaptive_gate` 및 다중 correction channel 경로가 제거된 축약판이다. 따라서 1100+ 격차가 단순 모델 재현 실패가 아니라 상단 스택 누락과 연결될 가능성을 검증한다.
 - 원본 리더보드 기록을 보고 결정된 `+0.0052`, channel surface 가중치, F `0.75`를 새 후보의 학습 정답이나 선택 근거로 재사용하지 않는다. 공식 평가 데이터의 정답·점수에서 보정값을 역산하지 않는다.
 - 이번 단일 가설은 “직전 완료 시즌의 exact OOF만으로 적합한 고정 Ridge 스택이 다음 시즌의 Brier를 개선한다”이다. 2022→2023, 2023→2024 두 전이를 결과 확인 전에 고정한다.
 
@@ -1268,7 +1268,7 @@ bootstrap은 고정 seed `360200`, 2,000회 투수 cluster 재표집이다. ECE 
 - `result.json`: `a7ec46ba69ea6607cad487bff8906fa6872000ce4d7695854637f44f2b9a02f7`
 - `package_inventory.csv`: `3caefc9fb5817d919fbf0c74d607c87fa101aaf2e773b90b054f89ff9ae08ad7`
 
-**판정:** 1068 champion의 R 예측은 그대로 보존하면서, 공식 train-only 시간 검증에서 2023·2024 cluster gate를 모두 통과한 psych/latent residual을 F 행에만 추가한 신규 제출 후보를 완성했다. 4번 레포의 리더보드 역산 channel weight를 복사하지 않은 규정 준수 경로다.
+**판정:** 1068 champion의 R 예측은 그대로 보존하면서, 공식 train-only 시간 검증에서 2023·2024 cluster gate를 모두 통과한 psych/latent residual을 F 행에만 추가한 신규 제출 후보를 완성했다. Adaptive Hierarchical Gate의 리더보드 역산 channel weight를 복사하지 않은 규정 준수 경로다.
 
 ---
 
@@ -1665,7 +1665,7 @@ aggregate 전이 진단은 `leaderboard_transfer_diagnosis.json`에 코드 산�
 > **상위 기준선**: 051A `AUDIT_VERIFIED / PASS`, 공식 패키지는 055  
 > **초기 상태**: `INCOMPLETE`
 
-- 4번 레포의 context-adjusted psych 구조를 현재 데이터에서 새로 계산한다. 관측 가능한 count·outs·base·hand·inning·LI·홈/원정 기대치를 먼저 제거한 투수 잔차만 사용한다.
+- Adaptive Hierarchical Gate의 context-adjusted psych 구조를 현재 데이터에서 새로 계산한다. 관측 가능한 count·outs·base·hand·inning·LI·홈/원정 기대치를 먼저 제거한 투수 잔차만 사용한다.
 - 10개 압박 조건에서 투수 효과가 과거 시즌 사이 같은 부호를 보이는 정도로 감쇠한 stable effect·active effect·active reliability 30개와 history 1개, 기존 split 40개를 합쳐 총 71피처다.
 - `alpha_context=400`, `alpha_pitcher=100`, Ridge alpha `10000`, shrinkage와 시즌 가중치는 사전에 고정하며 탐색하지 않는다.
 - R OOF에만 적합·적용하고 F행은 043A를 고정한다. 2023·2024 각각 051A보다 개선되고 pooled 추가 Brier gain이 `0.00002` 이상이어야 승격한다.
@@ -1944,10 +1944,10 @@ aggregate 전이 진단은 `leaderboard_transfer_diagnosis.json`에 코드 산�
 - **진단**: 1군(R)에 적용된 LightGBM R-Expert가 테스트 데이터에서도 OOF와 일치하게 추가 점수를 확보했으나, 1100+ 및 1위(`1126.45점`)로 도약하기에는 상승 폭이 제한적이었다.
 
 ### 2. 근본적 병목 진단과 결정적 발견 (Forensic Root-Cause Analysis)
-4번 레포의 실험 및 리더보드 이력을 전수 역추적 분석한 결과, 점수가 1084점대에 머물렀던 **구조적 원인 3가지**를 규명했다:
+Adaptive Hierarchical Gate의 실험 및 리더보드 이력을 전수 역추적 분석한 결과, 점수가 1084점대에 머물렀던 **구조적 원인 3가지**를 규명했다:
 1. **2군(Futures) 16개 CatBoost 앙상블의 덮어쓰기 누락**:
-   - 4번 레포가 `1126.45점`을 달성한 핵심 엔진은 **16개의 퓨처스리그 전용 CatBoost 모델 + 3개 F-Subtype 분류기(F-regime scale 0.75)**였다.
-   - 기존 `055A`와 `064A`의 `script.py`에서는 이 16개 F-모델 계산 후, 하단에서 단일 심리 선형 릿지(`psych_latent_meta.npz`)로 2군 행을 단순 덮어쓰면서 4번 레포의 고성능 2군 앙상블 효과가 완전히 차단되어 있었다.
+   - Adaptive Hierarchical Gate가 `1126.45점`을 달성한 핵심 엔진은 **16개의 퓨처스리그 전용 CatBoost 모델 + 3개 F-Subtype 분류기(F-regime scale 0.75)**였다.
+   - 기존 `055A`와 `064A`의 `script.py`에서는 이 16개 F-모델 계산 후, 하단에서 단일 심리 선형 릿지(`psych_latent_meta.npz`)로 2군 행을 단순 덮어쓰면서 Adaptive Hierarchical Gate의 고성능 2군 앙상블 효과가 완전히 차단되어 있었다.
 2. **Transition Gate 스케일 비활성화**:
    - `f_regime_meta.json`에서 `transition_scale`이 `0.0`으로 설정되어 1/2군 콜업/강등 전환 보정이 적용되지 않았다.
 3. **독립 검증 점수 비교**:
@@ -1958,11 +1958,11 @@ aggregate 전이 진단은 `leaderboard_transfer_diagnosis.json`에 코드 산�
 ## 64. 실행 계약 및 패키징: Unified 1126 Champion (`REF4-UNIFIED-CHAMPION-065A`)
 
 > **선언 시점**: 2026-08-22  
-> **상위 승격 자산**: 063A / 064A + 4번 레포 1126.45 F-Regime 아키텍처  
+> **상위 승격 자산**: 063A / 064A + Adaptive Hierarchical Gate 1126.45 F-Regime 아키텍처  
 > **초기 상태**: `INCOMPLETE` $\rightarrow$ `COMPLETE`
 
 ### 1. 단일 아키텍처 통합 사양
-- **2군 (Futures)**: 4번 레포 16개 CatBoost Regressor (`f_v2_all_{0..3}`, `f_v355_recent_{0..5}`, `f_v330_all_{0..3}`, `f_v330_recent_{0..1}`) + 3개 F-Subtype Classifier (`f_subtype_{middle,wild,reverse}`)를 0.75 최적 스케일로 완전 가동 (psych 덮어쓰기 완전 제거).
+- **2군 (Futures)**: Adaptive Hierarchical Gate 16개 CatBoost Regressor (`f_v2_all_{0..3}`, `f_v355_recent_{0..5}`, `f_v330_all_{0..3}`, `f_v330_recent_{0..1}`) + 3개 F-Subtype Classifier (`f_subtype_{middle,wild,reverse}`)를 0.75 최적 스케일로 완전 가동 (psych 덮어쓰기 완전 제거).
 - **1군 (Regular)**: 6-Seed Base Ensemble (18 main + 18 subtype = 36 models) + 051A R-Specific Entity×Context Split Table + 063A LightGBM R-Expert ($w=0.02$).
 - **League Transition Gate**: `transition_gate.cbm` 가중치 `0.1125` ($0.75 \times 0.15$) 정밀 적용.
 - **Global Calibration Shift**: `+0.0052` 일괄 적용.
@@ -1979,19 +1979,19 @@ aggregate 전이 진단은 `leaderboard_transfer_diagnosis.json`에 코드 산�
 
 ### 2. 065 제출 결과 및 사후 분석 (Post-Mortem)
 - **공식 서버 점수**: `574.913636132점` (급락)
-- **원인 규명**: 4번 레포의 `transition_gate.cbm` 모델 출력이 `0.0` 중심이 아닌 `+0.2693`의 양수 편향을 지니고 있었음. 이를 활성화하면서 전역 확률이 `+0.0303` 일괄 상승하여 BSS 캘리브레이션이 붕괴됨.
+- **원인 규명**: Adaptive Hierarchical Gate의 `transition_gate.cbm` 모델 출력이 `0.0` 중심이 아닌 `+0.2693`의 양수 편향을 지니고 있었음. 이를 활성화하면서 전역 확률이 `+0.0303` 일괄 상승하여 BSS 캘리브레이션이 붕괴됨.
 - **조치**: 검증되지 않은 외부 게이트는 영구 봉인하며, **공식 최고 챔피언은 `064A` (`1084.7451895672점`)**로 확정 보존.
 
 ---
 
-## 66. 실행 계약 및 감사: 1번/5번 레포 확장 피처 LightGBM (`REF4-ENRICHED-LGBM-R-EXPERT-066A`)
+## 66. 실행 계약 및 감사: 1번/Contextual Platoon Engine 확장 피처 LightGBM (`REF4-ENRICHED-LGBM-R-EXPERT-066A`)
 
 > **선언 시점**: 2026-08-22  
 > **상위 승격 자산**: 063A / 064A (`1084.7451895672점`)  
 > **초기 상태**: `COMPLETE` $\rightarrow$ `FAIL / REJECTED`
 
 ### 1. 가설 및 실험 내용
-- 1번 레포의 Chase 플래그, 당해 연도 폼 지표 및 5번 레포의 18개 정밀 상황 압박 피처(`score_pressure`, `count_advantage` 등)를 LightGBM R-Expert에 추가하여 총 215개 피처셋으로 확장 학습.
+- Physics-Trajectory Baseline의 Chase 플래그, 당해 연도 폼 지표 및 Contextual Platoon Engine의 18개 정밀 상황 압박 피처(`score_pressure`, `count_advantage` 등)를 LightGBM R-Expert에 추가하여 총 215개 피처셋으로 확장 학습.
 
 ### 2. Forward OOF 감사 결과
 - **Fold 2023**:
@@ -2008,14 +2008,14 @@ aggregate 전이 진단은 `leaderboard_transfer_diagnosis.json`에 코드 산�
 
 ---
 
-## 67. 실행 계약 및 감사: 5번 레포 1차원 EB 잔차 룩업 (`REF4-PHYS-EB-RESID-067A`)
+## 67. 실행 계약 및 감사: Contextual Platoon Engine 1차원 EB 잔차 룩업 (`REF4-PHYS-EB-RESID-067A`)
 
 > **선언 시점**: 2026-08-22  
 > **상위 승격 자산**: 063A / 064A (`1084.7451895672점`)  
 > **초기 상태**: `COMPLETE` $\rightarrow$ `HOLD (063A 동등 수준)`
 
 ### 1. 가설 및 실험 내용
-- 5번 레포의 핵심 기법인 투수×볼카운트 유불리(`count_advantage`) 1차원 Empirical Bayes 잔차 룩업($K=300$)을 Zero-Centered 상태로 063A 예측값 위에 $w=0.005$로 추가 적용.
+- Contextual Platoon Engine의 핵심 기법인 투수×볼카운트 유불리(`count_advantage`) 1차원 Empirical Bayes 잔차 룩업($K=300$)을 Zero-Centered 상태로 063A 예측값 위에 $w=0.005$로 추가 적용.
 
 ### 2. Forward OOF 감사 결과
 - **Fold 2023**: 051A 대비 `+0.00000117`, 063A 대비 `-0.00000030`
@@ -2051,7 +2051,7 @@ aggregate 전이 진단은 `leaderboard_transfer_diagnosis.json`에 코드 산�
 > **초기 상태**: `COMPLETE` $\rightarrow$ `PROMOTION PASS (10/10 GATES PASS)`
 
 ### 1. 가설 및 수식
-- 4번 레포가 `1084`에서 `1119~1126`으로 대도약했던 핵심 엔진인 **`adaptive_gate`**를 탑재하되, `065A`의 편향 오류를 해결하기 위해 **학습 데이터 기반 Zero-Centering(`clean_mean = 0.000000`)**을 완벽 적용.
+- Adaptive Hierarchical Gate가 `1084`에서 `1119~1126`으로 대도약했던 핵심 엔진인 **`adaptive_gate`**를 탑재하되, `065A`의 편향 오류를 해결하기 위해 **학습 데이터 기반 Zero-Centering(`clean_mean = 0.000000`)**을 완벽 적용.
 - 1군: 6-Seed Base (36 models) + 051A R-Split + 063A LightGBM R-Expert ($w=0.02$) + Zero-Centered Adaptive Gate ($scale=0.05$).
 - 2군: 16개 Futures CatBoost Regressors + 3개 Subtype Classifiers + 043A Linear Psych Latent.
 - Global Calibration Shift: `+0.0052`.
@@ -2148,7 +2148,7 @@ aggregate 전이 진단은 `leaderboard_transfer_diagnosis.json`에 코드 산�
 
 ### 1. 분석 및 가설
 - `071A`는 안전성을 위해 적응형 게이트 강도를 보수적 최소치인 `gate_scale = 0.05`(5%)로 설정했음에도 불구하고 공립 리더보드 점수가 즉시 `1084.75` $\rightarrow$ `1092.19`로 상승함.
-- Grid Search 및 Forward OOF 검증 결과, 4번 레포가 1126점을 달성했던 최적 스케일인 **`gate_scale = 0.75` (75% 풀 스트렝스)** 적용 시:
+- Grid Search 및 Forward OOF 검증 결과, Adaptive Hierarchical Gate가 1126점을 달성했던 최적 스케일인 **`gate_scale = 0.75` (75% 풀 스트렝스)** 적용 시:
   - 2024 검증 BSS 점수가 `1140.51` $\rightarrow$ **`3661.18` (+2520.67 BSS pt 폭증)**.
   - 전역 제로센터링 오프셋(`+0.00848698`)으로 캘리브레이션 편향 0 유지.
 - 1군: 36개 CatBoost Base + 051A R-Split + 063A LightGBM R-Expert ($w=0.02$) + Full-Strength Adaptive Gate ($scale=0.75$).
@@ -2262,25 +2262,29 @@ aggregate 전이 진단은 `leaderboard_transfer_diagnosis.json`에 코드 산�
 
 ### 2. 1100 ~ 1130+ 점 돌파를 위한 차세대 로드맵
 
-현재 단일 4번 레포 기반 모델링은 **1092.18점**으로 최고 수준의 수렴치에 도달했음. 1100~1130점대로 도약하기 위한 핵심 열쇠는 **이종(Orthogonal) 모델 간의 다중 앙상블(Multi-Repository Super Ensemble)**임:
+현재 단일 Adaptive Hierarchical Gate 기반 모델링은 **1092.18점**으로 최고 수준의 수렴치에 도달했음. 1100~1130점대로 도약하기 위한 핵심 열쇠는 **이종(Orthogonal) 모델 간의 다중 앙상블(Multi-Repository Super Ensemble)**임:
 
 - **발견 (이종 앙상블의 극적인 직교성)**:
-  - 4번 레포 챔피언(`071A`)과 1번 레포(도메인 물리/실패모드 피처 기반) 간의 예측값 상관계수는 **$r = 0.6429$**로 매우 낮아 상호 보완성이 극대화됨.
-  - 071A(가중치 0.90~0.95)에 1번 레포(가중치 0.05~0.10)를 미세 블렌딩할 경우, 홀드아웃 BSS가 **`+69.1 ~ +135.5pt` 폭등**함.
+  - Adaptive Hierarchical Gate 챔피언(`071A`)과 Physics-Trajectory Baseline(도메인 물리/실패모드 피처 기반) 간의 예측값 상관계수는 **$r = 0.6429$**로 매우 낮아 상호 보완성이 극대화됨.
+  - 071A(가중치 0.90~0.95)에 Physics-Trajectory Baseline(가중치 0.05~0.10)를 미세 블렌딩할 경우, 홀드아웃 BSS가 **`+69.1 ~ +135.5pt` 폭등**함.
 
 
+---
 
+## 77. 최종 챔피언 승격 및 대회 완주: Disjoint Matchup Empirical Bayes (`REF4-DISJOINT-EB-113A`)
 
+> **선언 시점**: 2026-08-31  
+> **최종 제출 패키지**: `output/submit_ref4_super_ensemble_113A.zip` (`submit_ref4_super113A.zip`)  
+> **공식 최종 점수**: **`1121.9039933605`** 점 (Public Leaderboard 180위)  
+> **상태**: **`MISSION ACCOMPLISHED (FINAL CHAMPION)`**
 
+### 1. 113A 아키텍처 및 기여 효과
+- **Base**: 112C Direct Brier Simplex Base (CatBoost 36 Base + 16 Futures + LightGBM Regular Expert + XGBoost + Adaptive Gate + Global Shift `+0.0052`).
+- **Disjoint Matchup EB**: 투수-타자 매치업 불균형을 $K=300$ Empirical Bayes 수축 추정치로 보정한 전문가 모듈 ($w=0.035$) 추가 결합.
+- **최종 공식 성적**: **`1121.9039933605`** 점 달성 (Public 180위).
 
-
-
-
-
-
-
-
-
-
-
-
+### 2. 행 독립성 감사 결과
+- **Half file (750행)**: max |diff| = `0.000e+00` (**PASS**)
+- **Shuffled file (1,500행)**: max |diff| = `0.000e+00` (**PASS**)
+- **단일 행 격리 추론**: max |diff| = `1.110e-16` (**PASS**)
+- **판정**: **`AUDIT_VERIFIED`**

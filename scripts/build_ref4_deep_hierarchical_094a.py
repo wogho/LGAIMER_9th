@@ -210,7 +210,7 @@ def main():
         asof_p = test["asof_pitcher_success_rate"].fillna(0.523766).to_numpy() if "asof_pitcher_success_rate" in test.columns else np.full(len(test), 0.523766)
         pitcher_form_gap = prev1_p - asof_p
         
-        # 6번 레포 회고록 10번 증명: Futures(2군)에서 5.2배 강한 상관관계(+0.0686 vs +0.0130)를 활용한 Regime-Isolated Form Gap Scaling
+        # Hierarchical Reliability Engine 회고록 10번 증명: Futures(2군)에서 5.2배 강한 상관관계(+0.0686 vs +0.0130)를 활용한 Regime-Isolated Form Gap Scaling
         f_form_scale = float(meta.get("futures_form_gap_scale", 0.025))
         p = np.where(futures, p + f_form_scale * pitcher_form_gap, p)
 

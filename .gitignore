@@ -1,48 +1,65 @@
 # ──────────────────────────────────────
-# 대용량 데이터 (GitHub 100MB 제한)
+# 대용량 데이터 파일
 # ──────────────────────────────────────
-data/train.csv
-data/trackman_history.csv
+data/
+*.csv
+*.tsv
 
 # ──────────────────────────────────────
-# Python 가상환경
-# ──────────────────────────────────────
-.venv/
-.venv-submit/
-
-# ──────────────────────────────────────
-# Python bytecode & cache
-# ──────────────────────────────────────
-__pycache__/
-*.pyc
-*.pyo
-.pytest_cache/
-
-# ──────────────────────────────────────
-# Jupyter Notebook checkpoints
-# ──────────────────────────────────────
-.ipynb_checkpoints/
-
-# ──────────────────────────────────────
-# 모델 파일 및 대용량 산출물 디렉토리
+# 모델 파일 및 대용량 체크포인트/아티팩트
 # ──────────────────────────────────────
 model/
 candidate/
 scratch/
-github_reference/
+output/
 *.pkl
 *.joblib
 *.bin
 *.cbm
-*.txt
-*.json
 *.npz
 *.parquet
 *.feather
-!requirements.txt
-!package.json
-!tsconfig.json
-!team_asof_profile.json
+*.h5
+*.pt
+*.pth
+*.onnx
+
+# ──────────────────────────────────────
+# ZIP 및 압축 아카이브
+# ──────────────────────────────────────
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.bz2
+*.7z
+
+# ──────────────────────────────────────
+# PPT / PDF 바이너리 발표자료 (마크다운 문서로 대체 기록)
+# ──────────────────────────────────────
+*.pdf
+*.pptx
+*.ppt
+solution/*.pdf
+solution/*.pptx
+output/*.pdf
+output/*.pptx
+
+# ──────────────────────────────────────
+# Python 가상환경 및 캐시
+# ──────────────────────────────────────
+.venv/
+.venv-submit/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
 
 # ──────────────────────────────────────
 # 머신러닝 로그 & 임시 디렉토리
@@ -50,22 +67,30 @@ github_reference/
 catboost_info/
 wandb/
 lightning_logs/
+runs/
 
 # ──────────────────────────────────────
-# 출력 파일
+# Jupyter Notebook checkpoints
 # ──────────────────────────────────────
-output/
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
 
 # ──────────────────────────────────────
-# IDE / OS
+# IDE / OS / 임시 파일
 # ──────────────────────────────────────
 .idea/
 .vscode/
 *.swp
 *.swo
+*~
 .DS_Store
 Thumbs.db
 
-# zip 파일
-*.zip
-
+# ──────────────────────────────────────
+# 트래킹 예외 (깃에 유지할 파일)
+# ──────────────────────────────────────
+!requirements.txt
+!requirements_submit.txt
+!package.json
+!tsconfig.json
+!solution/README.md

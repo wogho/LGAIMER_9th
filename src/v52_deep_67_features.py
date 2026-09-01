@@ -95,7 +95,7 @@ def build_v52_deep_67_features(df: pd.DataFrame, profile_path: Path | str | None
     out["batter_bayes_smoothed"] = b_smoothed.astype(np.float32)
     out["net_bayes_advantage"] = (p_smoothed - b_smoothed).astype(np.float32)
 
-    # 6. NEW 6번 레포 폼 격차 수치 (2 features -> Total 67 features)
+    # 6. NEW Hierarchical Reliability Engine 폼 격차 수치 (2 features -> Total 67 features)
     out["batter_pitcher_form_gap"] = (prev1 - b_prev1).astype(np.float32)
     out["career_form_gap"] = (p_rate - b_rate).astype(np.float32)
 

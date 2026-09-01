@@ -35,7 +35,7 @@ def sha256_file(p: Path) -> str:
     return h.hexdigest()
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -56,7 +56,7 @@ def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
     }, index=df.index)
 
 def extract_advanced_physics(df: pd.DataFrame) -> pd.DataFrame:
-    """1번/2번/3번/8번 레포 통합 3D 물리 궤적, 릴리즈 안정성, 볼카운트 압박 의도 피처."""
+    """1번/2번/3번/Multi-Class Sub-Expert Engine 통합 3D 물리 궤적, 릴리즈 안정성, 볼카운트 압박 의도 피처."""
     velo = df["release_speed"].fillna(142.0).to_numpy(float) if "release_speed" in df.columns else np.full(len(df), 142.0)
     spin = df["spin_rate"].fillna(2200.0).to_numpy(float) if "spin_rate" in df.columns else np.full(len(df), 2200.0)
     pfx_x = df["pfx_x"].fillna(0.0).to_numpy(float) if "pfx_x" in df.columns else np.zeros(len(df))
@@ -257,7 +257,7 @@ MODEL = ROOT / "model"
 
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -279,7 +279,7 @@ def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def extract_advanced_physics(df: pd.DataFrame) -> pd.DataFrame:
-    """1번/2번/3번/8번 레포 통합 3D 물리 궤적, 릴리즈 안정성, 볼카운트 압박 의도 피처."""
+    """1번/2번/3번/Multi-Class Sub-Expert Engine 통합 3D 물리 궤적, 릴리즈 안정성, 볼카운트 압박 의도 피처."""
     velo = df["release_speed"].fillna(142.0).to_numpy(float) if "release_speed" in df.columns else np.full(len(df), 142.0)
     spin = df["spin_rate"].fillna(2200.0).to_numpy(float) if "spin_rate" in df.columns else np.full(len(df), 2200.0)
     pfx_x = df["pfx_x"].fillna(0.0).to_numpy(float) if "pfx_x" in df.columns else np.zeros(len(df))

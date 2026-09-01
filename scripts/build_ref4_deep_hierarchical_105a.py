@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Production Package 105A: Champion 103A Backbone (1107.1970 LB) + 7번 레포 Batter-Pitcher Form Gap Integration."""
+"""Build Production Package 105A: Champion 103A Backbone (1107.1970 LB) + Dual-Regime Calibration Engine Batter-Pitcher Form Gap Integration."""
 import gc, hashlib, json, os, shutil, sys, time, zipfile
 from pathlib import Path
 import pandas as pd
@@ -33,7 +33,7 @@ def sha256_file(p: Path) -> str:
     return h.hexdigest()
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -78,7 +78,7 @@ MODEL = ROOT / "model"
 
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -200,7 +200,7 @@ def main():
         v54_feat, _ = build_v54_per_season_asof_75_features(
             test, profile_path=MODEL / "team_asof_profile.json", priors=priors, prior=float(meta.get("prior", 0.523766))
         )
-        # Inject 9번 레포 3대 Leverage Index 파생 피처
+        # Inject Leverage-Index Dynamics Engine 3대 Leverage Index 파생 피처
         lev_df = build_leverage_features(test)
         v54_feat = pd.concat([v54_feat, lev_df], axis=1)
 
@@ -256,7 +256,7 @@ def main():
         deep_corr = p_deep_reconstructed - deep_mean_offset
         p = np.where(regular, p + w_deep * deep_corr, p)
 
-    # 103A CHAMPION: 8번 레포 Refined Call 6-Class Multi-Class Sub-Expert (w=0.04) (1107.1970 LB Champion)
+    # 103A CHAMPION: Multi-Class Sub-Expert Engine Refined Call 6-Class Multi-Class Sub-Expert (w=0.04) (1107.1970 LB Champion)
     w_refined_call = float(meta.get("w_refined_call", 0.04))
     if regular.any() and w_refined_call > 0.0 and (MODEL / "refined_call_expert.cbm").exists():
         cb_call = CatBoostClassifier()
@@ -273,7 +273,7 @@ def main():
         call_corr = p_call_success - call_mean_offset
         p = np.where(regular, p + w_refined_call * call_corr, p)
 
-    # 105A NEW: 7번 레포 Form Gap Expert (w=0.03) (1146.3952pt 신기록 원동력)
+    # 105A NEW: Dual-Regime Calibration Engine Form Gap Expert (w=0.03) (1146.3952pt 신기록 원동력)
     w_form_gap = float(meta.get("w_form_gap", 0.03))
     if regular.any() and w_form_gap > 0.0 and (MODEL / "form_gap_expert.cbm").exists():
         cb_form = CatBoostRegressor()
@@ -319,7 +319,7 @@ if __name__ == "__main__":
 
 def build_package():
     t0 = time.time()
-    print("=== Step 1: Training 7번 레포 Form Gap Sub-Expert Model ===")
+    print("=== Step 1: Training Dual-Regime Calibration Engine Form Gap Sub-Expert Model ===")
     raw = pd.read_csv(ROOT / 'data/train.csv', low_memory=False)
     priors = build_per_season_priors(raw)
     
@@ -363,7 +363,7 @@ def build_package():
     
     tr_form_preds = cb_form.predict(x3_cb_tr)
     form_mean_offset = float(np.mean(tr_form_preds))
-    print(f"  • Trained 7번 레포 Form Gap Expert (Mean pred offset: {form_mean_offset:.6f})")
+    print(f"  • Trained Dual-Regime Calibration Engine Form Gap Expert (Mean pred offset: {form_mean_offset:.6f})")
 
     print("\n=== Step 2: Copying Champion 103A Base Assets & Manifest Setup ===")
     for f in SOURCE_103_MODEL.iterdir():
@@ -387,7 +387,7 @@ def build_package():
     manifest['w_refined_call'] = 0.04
     manifest['w_form_gap'] = 0.03
     manifest['form_mean_offset'] = form_mean_offset
-    manifest['notes'] = "105A 103A Champion Backbone (1107.1970 LB) + 7번 레포 Form Gap Expert (w=0.03)"
+    manifest['notes'] = "105A 103A Champion Backbone (1107.1970 LB) + Dual-Regime Calibration Engine Form Gap Expert (w=0.03)"
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
     print("Updated manifest.json for 105A")
     

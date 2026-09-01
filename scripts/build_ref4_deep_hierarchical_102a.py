@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Production Package 102A: Champion 100A Backbone (1105.6845 LB) + 9번 레포 Leverage Index (`li`) 3대 파생 피처 적용 고용량 40 Pure L2 백본 재학습."""
+"""Build Production Package 102A: Champion 100A Backbone (1105.6845 LB) + Leverage-Index Dynamics Engine Leverage Index (`li`) 3대 파생 피처 적용 고용량 40 Pure L2 백본 재학습."""
 import gc, hashlib, json, os, shutil, sys, time, zipfile
 from pathlib import Path
 import pandas as pd
@@ -32,7 +32,7 @@ def sha256_file(p: Path) -> str:
     return h.hexdigest()
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -77,7 +77,7 @@ MODEL = ROOT / "model"
 
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -199,7 +199,7 @@ def main():
         v54_feat, _ = build_v54_per_season_asof_75_features(
             test, profile_path=MODEL / "team_asof_profile.json", priors=priors, prior=float(meta.get("prior", 0.523766))
         )
-        # Inject 9번 레포 3대 Leverage Index 파생 피처
+        # Inject Leverage-Index Dynamics Engine 3대 Leverage Index 파생 피처
         lev_df = build_leverage_features(test)
         v54_feat = pd.concat([v54_feat, lev_df], axis=1)
 
@@ -366,7 +366,7 @@ def build_package():
     manifest['pocket_upshift_val'] = +0.008
     manifest['deep_mean_offset'] = deep_mean_offset
     manifest['leverage_features_added'] = ["is_high_leverage", "li_count_diff", "li_late_close"]
-    manifest['notes'] = "102A 9번 레포 3대 Leverage Index 파생 피처 결합 40 Pure L2 백본 재학습"
+    manifest['notes'] = "102A Leverage-Index Dynamics Engine 3대 Leverage Index 파생 피처 결합 40 Pure L2 백본 재학습"
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
     print(f"Updated manifest.json for 102A (deep_mean_offset = {deep_mean_offset:.6f})")
     

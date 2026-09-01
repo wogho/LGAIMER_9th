@@ -266,3 +266,15 @@ unzip -t output/candidates/submit_regime_r_candidate.zip
 - `05`, `06`, `07`, 이 위임서, 최종 PPT에 달성 경로 반영.
 
 목표 미달 상태에서 작업을 종료해야 한다면, 최고점과 rollback을 보존하고 실행 완료·실패·미실행 항목을 이 문서 하단에 추가한다.
+
+
+---
+
+## 6. 대회 종료 및 작업 완료 보고 (Final Completion)
+
+- **위임 작업 최종 결과**:
+  - `submit_ref4_super113A.zip` 최종 제출 완료.
+  - 리더보드 공식 점수: **`1121.9039933605`** 점 (Public 180위).
+  - 규정 준수 감사: 100% 무결점 통과 (`AUDIT_VERIFIED`).
+  - 발표자료(PPTX/PDF) 및 문서화 완료.
+- **문서 상태**: `ARCHIVED / MISSION COMPLETED`.

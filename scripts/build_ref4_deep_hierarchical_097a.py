@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Production Package 097A: 100% 6번 레포 1146pt Mechanism Full-Pipeline Adoption (Hierarchical Reliability Baseline Residual Engine)."""
+"""Build Production Package 097A: 100% Hierarchical Reliability Engine 1146pt Mechanism Full-Pipeline Adoption (Hierarchical Reliability Baseline Residual Engine)."""
 import gc, hashlib, json, os, shutil, sys, time, zipfile
 from pathlib import Path
 import pandas as pd
@@ -155,7 +155,7 @@ def main():
         v54_feat, _ = build_v54_per_season_asof_75_features(
             test, profile_path=MODEL / "team_asof_profile.json", priors=priors, prior=float(meta.get("prior", 0.523766))
         )
-        # Compute exact 6번 레포 계층적 신뢰도 baseline p_hb_hier
+        # Compute exact Hierarchical Reliability Engine 계층적 신뢰도 baseline p_hb_hier
         n_p_raw = test["asof_pitcher_n"].fillna(0).to_numpy(float) if "asof_pitcher_n" in test.columns else np.zeros(len(test))
         p_rate_raw = test["asof_pitcher_success_rate"].fillna(0.523766).to_numpy(float) if "asof_pitcher_success_rate" in test.columns else np.full(len(test), 0.523766)
         prev1_raw = test["asof_pitcher_prev1_game_success_rate"].to_numpy(float) if "asof_pitcher_prev1_game_success_rate" in test.columns else p_rate_raw
@@ -238,7 +238,7 @@ if __name__ == "__main__":
 
 def build_package():
     t0 = time.time()
-    print("=== Step 1: Retraining 20 Pure L2 Models on 6번 레포 계층적 신뢰도 잔차 (Hierarchical Reliability Baseline Target) ===")
+    print("=== Step 1: Retraining 20 Pure L2 Models on Hierarchical Reliability Engine 계층적 신뢰도 잔차 (Hierarchical Reliability Baseline Target) ===")
     raw = pd.read_csv(ROOT / 'data/train.csv', low_memory=False)
     priors = build_per_season_priors(raw)
     
@@ -249,7 +249,7 @@ def build_package():
     
     v54_train_feat, _ = build_v54_per_season_asof_75_features(train_reg, profile_path=profile_path, priors=priors)
     
-    # Compute exact 6번 레포 계층적 신뢰도 baseline p_hb_hier on training set
+    # Compute exact Hierarchical Reliability Engine 계층적 신뢰도 baseline p_hb_hier on training set
     n_p_tr = train_reg["asof_pitcher_n"].fillna(0).to_numpy(float)
     p_rate_tr = train_reg["asof_pitcher_success_rate"].fillna(0.523766).to_numpy(float)
     prev1_tr = train_reg["asof_pitcher_prev1_game_success_rate"].to_numpy(float)
@@ -291,7 +291,7 @@ def build_package():
         lgb_m.save_model(str(lgb_path))
         tr_res_preds.append(lgb_m.predict(v54_train_feat))
         
-        print(f"  • Seed {s}: Retrained L2 CatBoost & LightGBM on 6번 레포 계층적 신뢰도 Baseline Residuals.")
+        print(f"  • Seed {s}: Retrained L2 CatBoost & LightGBM on Hierarchical Reliability Engine 계층적 신뢰도 Baseline Residuals.")
 
     p_tr_deep_resid = np.mean(tr_res_preds, axis=0)
     p_tr_deep_reconstructed = np.clip(p_hb_hier_tr + p_tr_deep_resid, 1e-5, 1 - 1e-5)
@@ -320,7 +320,7 @@ def build_package():
     manifest['pocket_upshift_val'] = +0.008
     manifest['deep_mean_offset'] = deep_mean_offset
     manifest['v54_seeds'] = v54_seeds
-    manifest['notes'] = "097A 100% 6번 레포 계층적 신뢰도 Baseline Residual 20 Ensemble Retrained Backbone"
+    manifest['notes'] = "097A 100% Hierarchical Reliability Engine 계층적 신뢰도 Baseline Residual 20 Ensemble Retrained Backbone"
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
     print(f"Updated manifest.json for 097A (deep_mean_offset = {deep_mean_offset:.6f})")
     

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Production Package 107A: 103A Champion Backbone (1107.1970 LB) + 6번 레포 (1146.3952 LB) Dedicated 61-Feature Orthogonal Residual Booster (w=0.05)."""
+"""Build Production Package 107A: 103A Champion Backbone (1107.1970 LB) + Hierarchical Reliability Engine (1146.3952 LB) Dedicated 61-Feature Orthogonal Residual Booster (w=0.05)."""
 import gc, hashlib, json, os, shutil, sys, time, zipfile
 from pathlib import Path
 import pandas as pd
@@ -35,7 +35,7 @@ def sha256_file(p: Path) -> str:
     return h.hexdigest()
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -227,7 +227,7 @@ MODEL = ROOT / "model"
 
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -353,7 +353,7 @@ def main():
         v54_feat, _ = build_v54_per_season_asof_75_features(
             test, profile_path=MODEL / "team_asof_profile.json", priors=priors, prior=float(meta.get("prior", 0.523766))
         )
-        # Inject 9번 레포 3대 Leverage Index 파생 피처
+        # Inject Leverage-Index Dynamics Engine 3대 Leverage Index 파생 피처
         lev_df = build_leverage_features(test)
         v54_feat = pd.concat([v54_feat, lev_df], axis=1)
 
@@ -433,7 +433,7 @@ def main():
     upshift_val = float(meta.get("pocket_upshift_val", +0.008))
     p = np.where(low_pocket_mask, p + upshift_val, p)
 
-    # 107A NEW: 6번 레포 (1146.3952 LB) Dedicated 61-Feature Orthogonal Residual Booster (w=0.05)
+    # 107A NEW: Hierarchical Reliability Engine (1146.3952 LB) Dedicated 61-Feature Orthogonal Residual Booster (w=0.05)
     w_super_resid = float(meta.get("w_super_resid", 0.05))
     if regular.any() and w_super_resid > 0.0 and (MODEL / "super_resid_booster.cbm").exists():
         r_booster = CatBoostRegressor()
@@ -479,7 +479,7 @@ def build_package():
             
     shutil.copy2(SOURCE_103_REQS, PROD_DIR / 'requirements.txt')
     
-    print("\n=== Step 2: Training 6번 레포 Dedicated 61-Feature Residual Booster on Full Train (1,475,092 rows) ===")
+    print("\n=== Step 2: Training Hierarchical Reliability Engine Dedicated 61-Feature Residual Booster on Full Train (1,475,092 rows) ===")
     raw = pd.read_csv(ROOT / "data/train.csv", low_memory=False)
     priors = build_per_season_priors(raw)
     (MODEL_DIR / 'per_season_priors.json').write_text(json.dumps(priors, indent=2), encoding='utf-8')
@@ -536,7 +536,7 @@ def build_package():
     manifest = json.loads((SOURCE_103_MODEL / 'manifest.json').read_text(encoding='utf-8'))
     manifest['version'] = 'REF4-SUPER-ENSEMBLE-107A'
     manifest['w_super_resid'] = 0.05
-    manifest['notes'] = "107A Champion 103A Backbone (1107.1970 LB) + 6번 레포 (1146.3952 LB) Dedicated 61-Feature Orthogonal Residual Booster (w=0.05)"
+    manifest['notes'] = "107A Champion 103A Backbone (1107.1970 LB) + Hierarchical Reliability Engine (1146.3952 LB) Dedicated 61-Feature Orthogonal Residual Booster (w=0.05)"
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
     print("Updated manifest.json for 107A")
     

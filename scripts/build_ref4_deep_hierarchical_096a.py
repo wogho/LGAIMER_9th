@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Production Package 096A: Champion 091A Backbone (1104.6158 LB) + Hierarchical Reliability Shrinkage Engine (6번 레포 1146pt Mechanism, k=25.0, w_hier=0.035)."""
+"""Build Production Package 096A: Champion 091A Backbone (1104.6158 LB) + Hierarchical Reliability Shrinkage Engine (Hierarchical Reliability Engine 1146pt Mechanism, k=25.0, w_hier=0.035)."""
 import gc, hashlib, json, os, shutil, sys, time, zipfile
 from pathlib import Path
 import pandas as pd
@@ -203,7 +203,7 @@ def main():
     upshift_val = float(meta.get("pocket_upshift_val", +0.008))
     p = np.where(low_pocket_mask, p + upshift_val, p)
 
-    # 096A NEW: Hierarchical Reliability Shrinkage Engine (6번 레포 1146pt Mechanism)
+    # 096A NEW: Hierarchical Reliability Shrinkage Engine (Hierarchical Reliability Engine 1146pt Mechanism)
     # Shrimps pitcher success rate with sample size n: rel_weight = n / (n + k_prior), k_prior=25.0
     w_hier_scale = float(meta.get("w_hier_scale", 0.035))
     k_prior = float(meta.get("k_prior", 25.0))

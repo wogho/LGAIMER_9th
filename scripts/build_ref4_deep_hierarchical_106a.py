@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Production Package 106A: Champion 103A Backbone (1107.1970 LB) + 6번/7번 레포 (1146.3952 LB) Sample-Size Hierarchical Reliability Shrinkage (K=5.0, w=0.12)."""
+"""Build Production Package 106A: Champion 103A Backbone (1107.1970 LB) + 6번/Dual-Regime Calibration Engine (1146.3952 LB) Sample-Size Hierarchical Reliability Shrinkage (K=5.0, w=0.12)."""
 import gc, hashlib, json, os, shutil, sys, time, zipfile
 from pathlib import Path
 import pandas as pd
@@ -33,7 +33,7 @@ def sha256_file(p: Path) -> str:
     return h.hexdigest()
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -78,7 +78,7 @@ MODEL = ROOT / "model"
 
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -204,7 +204,7 @@ def main():
         v54_feat, _ = build_v54_per_season_asof_75_features(
             test, profile_path=MODEL / "team_asof_profile.json", priors=priors, prior=float(meta.get("prior", 0.523766))
         )
-        # Inject 9번 레포 3대 Leverage Index 파생 피처
+        # Inject Leverage-Index Dynamics Engine 3대 Leverage Index 파생 피처
         lev_df = build_leverage_features(test)
         v54_feat = pd.concat([v54_feat, lev_df], axis=1)
 
@@ -239,7 +239,7 @@ def main():
         w_lgb = float(meta.get("r_expert_lgbm_weight", 0.05))
         p = np.where(regular, (1.0 - w_lgb) * p_split + w_lgb * p_lgbm, p)
 
-    # 106A CHAMPION: 6번/7번 레포 Sample-Size Hierarchical Reliability Shrinkage Modulated Pure L2 Models (w=0.12, K=5.0)
+    # 106A CHAMPION: 6번/Dual-Regime Calibration Engine Sample-Size Hierarchical Reliability Shrinkage Modulated Pure L2 Models (w=0.12, K=5.0)
     w_deep = float(meta.get("w_deep_hierarchical", 0.12))
     k_shrink = float(meta.get("k_reliability_shrinkage", 5.0))
     v54_seeds = meta.get("v54_seeds", [42, 1, 2, 3, 4, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150])
@@ -258,7 +258,7 @@ def main():
         deep_mean_offset = float(meta.get("deep_mean_offset", 0.514025))
         deep_corr = p_deep_reconstructed - deep_mean_offset
         
-        # 6번/7번 레포 Sample-Size Reliability Shrinkage Modulation
+        # 6번/Dual-Regime Calibration Engine Sample-Size Reliability Shrinkage Modulation
         rel_mod = n_p_raw / (n_p_raw + k_shrink)
         p = np.where(regular, p + w_deep * (rel_mod * deep_corr), p)
 
@@ -327,7 +327,7 @@ def build_package():
     manifest['pocket_downshift_val'] = -0.012
     manifest['pocket_upshift_val'] = +0.008
     manifest['w_refined_call'] = 0.04
-    manifest['notes'] = "106A Champion 103A Backbone (1107.1970 LB) + 6번/7번 레포 (1146.3952 LB) Sample-Size Hierarchical Reliability Shrinkage (K=5.0, w=0.12)"
+    manifest['notes'] = "106A Champion 103A Backbone (1107.1970 LB) + 6번/Dual-Regime Calibration Engine (1146.3952 LB) Sample-Size Hierarchical Reliability Shrinkage (K=5.0, w=0.12)"
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
     print("Updated manifest.json for 106A")
     

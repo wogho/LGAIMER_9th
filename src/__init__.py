@@ -1,1 +1,2 @@
-# LG Aimers Hackathon - Core Module
+"""LG Aimers control prediction package."""
+

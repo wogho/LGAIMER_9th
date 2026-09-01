@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate 6번/7번 레포 1146.3952pt mechanisms on 103A Champion Backbone."""
+"""Evaluate 6번/Dual-Regime Calibration Engine 1146.3952pt mechanisms on 103A Champion Backbone."""
 import gc, json, os, sys, time
 from pathlib import Path
 import numpy as np
@@ -211,7 +211,7 @@ def main():
     print(f"\n[Baseline 103A Champion on 2024 Holdout] Brier: {brier_103:.8f} | BSS: {bss_103:.4f}")
     
     # ----------------------------------------------------
-    # TEST MECHANISM A: 6번 레포 Sample-Size Reliability Shrinkage Modulated Deep Hierarchical
+    # TEST MECHANISM A: Hierarchical Reliability Engine Sample-Size Reliability Shrinkage Modulated Deep Hierarchical
     # ----------------------------------------------------
     print("\n--- Testing Mechanism A: Sample-Size Reliability Shrinkage Modulation ---")
     best_gain = 0.0
@@ -236,7 +236,7 @@ def main():
                 print(f"  --> [NEW BEST] K={k_val:4.1f}, w={w_cand:4.2f} -> Brier: {b_c:.8f} (Δ {delta_b:+.8f}) | BSS: {bss_c:.4f} (Δ {delta_bss:+.4f} pt)")
 
     # ----------------------------------------------------
-    # TEST MECHANISM B: 6번 레포 Hierarchical Reliability Sub-Correction
+    # TEST MECHANISM B: Hierarchical Reliability Engine Hierarchical Reliability Sub-Correction
     # ----------------------------------------------------
     print("\n--- Testing Mechanism B: Sample-Size Hierarchical Reliability Sub-Correction ---")
     # delta_rel = (n_p / (n_p + K)) * (p_hb_hier - prior)

@@ -1,4 +1,4 @@
-"""Build the free-form solution presentation for the LG Aimers Phase 2 entry."""
+"""Build the final solution presentation for the LG Aimers Phase 2 entry."""
 
 from pathlib import Path
 
@@ -11,6 +11,7 @@ from pptx.util import Inches, Pt
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "output" / "LG_Aimers_솔루션_PPT_Phase2.pptx"
+SOLUTION_PPTX = ROOT / "solution" / "LG_Aimers_솔루션_PPT_Phase2.pptx"
 
 W = Inches(13.333333)
 H = Inches(7.5)
@@ -101,26 +102,6 @@ def add_text(
     return box
 
 
-def add_rich_text(slide, runs, x, y, w, h, size=20, align=PP_ALIGN.LEFT, valign=MSO_ANCHOR.TOP):
-    box = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
-    tf = box.text_frame
-    tf.clear()
-    tf.word_wrap = True
-    tf.margin_left = tf.margin_right = Inches(0.02)
-    tf.margin_top = tf.margin_bottom = Inches(0.02)
-    tf.vertical_anchor = valign
-    p = tf.paragraphs[0]
-    p.alignment = align
-    for item in runs:
-        r = p.add_run()
-        r.text = item[0]
-        r.font.name = item[4] if len(item) > 4 else FONT
-        r.font.size = Pt(item[1] if len(item) > 1 else size)
-        r.font.bold = item[2] if len(item) > 2 else False
-        r.font.color.rgb = rgb(item[3] if len(item) > 3 else INK)
-    return box
-
-
 def add_label(slide, text, x, y, w, color=TEAL, fill=PANEL_2):
     add_rect(slide, x, y, w, 0.32, fill, radius=True)
     add_text(slide, text, x, y + 0.01, w, 0.27, size=10, color=color, bold=True, align=PP_ALIGN.CENTER)
@@ -135,15 +116,15 @@ def add_bullet_list(slide, items, x, y, w, h, size=16, color=INK, bullet_color=T
 
 def add_header(slide, number, eyebrow, title, subtitle=None):
     add_text(slide, f"{number:02d}", 0.55, 0.40, 0.45, 0.28, size=11, color=TEAL, bold=True)
-    add_text(slide, eyebrow.upper(), 1.05, 0.40, 3.4, 0.28, size=10, color=MUTED, bold=True)
-    add_text(slide, title, 0.55, 0.80, 12.2, 0.60, size=28, color=INK, bold=True)
+    add_text(slide, eyebrow.upper(), 1.05, 0.40, 4.5, 0.28, size=10, color=MUTED, bold=True)
+    add_text(slide, title, 0.55, 0.80, 12.2, 0.60, size=26, color=INK, bold=True)
     if subtitle:
         add_text(slide, subtitle, 0.58, 1.43, 12.0, 0.40, size=12, color=MUTED)
     add_line(slide, 0.55, 1.92, 12.78, 1.92, GRID, 0.8)
 
 
 def add_footer(slide, number):
-    add_text(slide, "LG Aimers · 제구 성공 확률 예측", 0.55, 7.15, 4.4, 0.20, size=8, color="74809A")
+    add_text(slide, "LG Aimers 9기 · 제구 성공 확률 예측 · 팀 나란차", 0.55, 7.15, 6.0, 0.20, size=8, color="74809A")
     add_text(slide, f"{number:02d}", 12.30, 7.15, 0.45, 0.20, size=8, color="74809A", align=PP_ALIGN.RIGHT)
 
 
@@ -178,23 +159,24 @@ def build_deck():
     ball.fill.solid(); ball.fill.fore_color.rgb = rgb(INK); ball.line.color.rgb = rgb("C8D1E2")
     add_line(slide, 10.55, 4.78, 11.06, 5.55, CORAL, 1.4)
     add_line(slide, 11.12, 4.80, 10.63, 5.54, CORAL, 1.4)
-    add_label(slide, "LG AIMERS · PHASE 2", 0.63, 0.57, 2.05)
+    add_label(slide, "LG AIMERS 9기 · PHASE 2 FINAL", 0.63, 0.57, 2.75)
     add_text(slide, "투구 직전 정보로\n제구 성공 확률을 읽다", 0.63, 1.35, 7.45, 1.75, size=36, bold=True)
-    add_text(slide, "시간 순 검증과 행 독립 피처 엔지니어링을 기반으로 한\n73개 피처 CatBoost 확률 모델", 0.68, 3.38, 7.35, 0.78, size=17, color=MUTED)
-    add_rect(slide, 0.65, 4.55, 6.95, 0.04, TEAL)
-    add_text(slide, "제출자  김재호   |   팀명  나란차", 0.68, 5.03, 6.6, 0.36, size=13, color=INK, bold=True)
-    add_text(slide, "최종 학습: 2019–2024  ·  예측 대상: 2025  ·  81 features", 0.68, 5.60, 7.1, 0.34, size=11, color=MUTED)
-    add_rect(slide, 0.65, 6.30, 7.10, 0.62, PANEL, radius=True)
-    add_text(slide, "Phase 3 오프라인 해커톤 참가 여부  |  아니요", 0.88, 6.48, 6.62, 0.27, size=13, color=CORAL, bold=True)
-    add_text(slide, "SOLUTION PRESENTATION", 9.05, 6.68, 3.33, 0.23, size=9, color="74809A", bold=True, align=PP_ALIGN.CENTER)
+    add_text(slide, "3-Tier Multi-Family GBDT Super Ensemble & Adaptive Hierarchical Gate\n최종 제출: submit_ref4_super113A.zip", 0.68, 3.38, 7.55, 0.78, size=15, color=MUTED)
+    add_rect(slide, 0.65, 4.45, 7.10, 0.04, TEAL)
+    add_text(slide, "제출자  김재호   |   팀명  나란차", 0.68, 4.85, 6.6, 0.36, size=13, color=INK, bold=True)
+    add_text(slide, "공식 최종 점수: 1121.9039933605점  |  Public 180위", 0.68, 5.30, 7.1, 0.34, size=14, color=GOLD, bold=True)
+    add_text(slide, "학습 데이터: 2019–2024 (1.47M행)  ·  예측 대상: 2025  ·  Strict Temporal Validation", 0.68, 5.80, 7.3, 0.30, size=11, color=MUTED)
+    add_rect(slide, 0.65, 6.35, 7.10, 0.55, PANEL, radius=True)
+    add_text(slide, "Phase 3 오프라인 해커톤 참가 여부  |  아니요", 0.88, 6.48, 6.62, 0.27, size=12, color=CORAL, bold=True)
+    add_text(slide, "FINAL SOLUTION PRESENTATION", 9.05, 6.68, 3.33, 0.23, size=9, color="74809A", bold=True, align=PP_ALIGN.CENTER)
 
-    # 02 — Problem
+    # 02 — Problem Framing
     slide = prs.slides.add_slide(blank); set_bg(slide)
-    add_header(slide, 2, "Problem framing", "확률을 맞히는 문제 — 순위보다 ‘잘 보정된 확률’")
+    add_header(slide, 2, "Problem framing", "확률을 맞히는 문제 — 순위보다 '잘 보정된 확률'")
     cards = [
-        ("TARGET", "control_success", "각 투구의 제구 성공 확률\n0–1 실수 출력", TEAL),
-        ("METRIC", "Brier Skill Score", "확률 오차를 직접 평가\n높을수록 우수", GOLD),
-        ("UNIT", "1 pitch = 1 row", "평가 행별 독립 예측\n다른 test 행 참조 금지", BLUE),
+        ("TARGET", "control_success", "각 투구의 제구 성공 확률\n0–1 실수 출력 (Brier 평가)", TEAL),
+        ("METRIC", "Brier Skill Score", "1 - (Brier / Base_Brier)\n점수가 높을수록 우수", GOLD),
+        ("UNIT", "1 pitch = 1 row", "평가 행별 100% 독립 예측\n다른 test 행 참조 절대 금지", BLUE),
     ]
     for i, (tag, value, note, color) in enumerate(cards):
         x = 0.58 + i * 4.15
@@ -203,23 +185,23 @@ def build_deck():
         add_text(slide, value, x + 0.24, 2.88, 3.25, 0.42, size=20, bold=True)
         add_text(slide, note, x + 0.24, 3.45, 3.18, 0.60, size=12, color=MUTED)
     add_rect(slide, 0.58, 4.72, 12.15, 1.72, "10182C", radius=True, line=GRID)
-    add_text(slide, "설계 원칙", 0.88, 4.98, 1.55, 0.30, size=13, color=CORAL, bold=True)
+    add_text(slide, "핵심 설계 원칙", 0.88, 4.98, 1.55, 0.30, size=13, color=CORAL, bold=True)
     principles = [
-        "미래 시즌 예측 구조를 반영한 시간 순 검증",
-        "공식 데이터만 사용 · 외부 API/외부 데이터 없음",
-        "현재 행 + 고정 모델만으로 완결되는 추론",
+        "미래 시즌 예측 구조를 반영한 시간 순 엄격 검증",
+        "공식 데이터만 사용 · 외부 API/데이터 원천 차단",
+        "현재 행 + 사전 고정 모델만으로 완결되는 추론",
     ]
     for i, text_value in enumerate(principles):
         x = 2.35 + i * 3.32
         add_text(slide, f"0{i+1}", x, 4.98, 0.35, 0.30, size=11, color=TEAL, bold=True)
         add_text(slide, text_value, x + 0.45, 4.94, 2.62, 0.72, size=12, color=INK, bold=True)
-    add_text(slide, "핵심 질문  |  ‘현재 투구 직전까지 알고 있는 정보만으로, 미래 시즌에서도 확률 품질을 유지할 수 있는가?’", 0.88, 6.00, 11.25, 0.25, size=11, color=MUTED)
+    add_text(slide, "핵심 질문  |  '현재 투구 직전 정보만으로, 2025년 미래 시즌에서도 안정적이고 우수한 확률 품질을 달성할 수 있는가?'", 0.88, 6.00, 11.25, 0.25, size=11, color=MUTED)
     add_footer(slide, 2)
 
-    # 03 — Data & validation
+    # 03 — Data & Strict Temporal Validation
     slide = prs.slides.add_slide(blank); set_bg(slide)
-    add_header(slide, 3, "Data & validation", "랜덤 분할 대신 ‘과거 → 미래’로 검증")
-    add_text(slide, "개발 검증", 0.63, 2.22, 1.3, 0.30, size=12, color=TEAL, bold=True)
+    add_header(slide, 3, "Data & validation", "랜덤 K-Fold 분할을 지양하고 '과거 → 미래'로 엄격 검증")
+    add_text(slide, "시계열 전이 검증 (Strict Temporal Forward Split)", 0.63, 2.22, 6.0, 0.30, size=12, color=TEAL, bold=True)
     y = 2.83
     x0 = 0.90
     seasons = list(range(2019, 2025))
@@ -230,10 +212,10 @@ def build_deck():
         add_text(slide, str(season), x, y + 0.17, 1.28, 0.30, size=14, bold=True, align=PP_ALIGN.CENTER)
         if i < len(seasons)-1:
             add_line(slide, x + 1.28, y + 0.36, x + 1.70, y + 0.36, GRID, 1.4)
-    add_text(slide, "TRAIN  |  1,475,092 rows", 1.15, 3.76, 8.20, 0.28, size=12, color=TEAL, bold=True, align=PP_ALIGN.CENTER)
-    add_text(slide, "VALID\n253,507", 10.55, 3.70, 1.28, 0.55, size=11, color=CORAL, bold=True, align=PP_ALIGN.CENTER)
+    add_text(slide, "TRAIN (2019–2023)  |  1,475,092 rows", 1.15, 3.76, 8.20, 0.28, size=12, color=TEAL, bold=True, align=PP_ALIGN.CENTER)
+    add_text(slide, "VALID (2024)\n253,507 rows", 10.40, 3.70, 1.60, 0.55, size=11, color=CORAL, bold=True, align=PP_ALIGN.CENTER)
     add_line(slide, 0.64, 4.35, 12.68, 4.35, GRID, 0.8)
-    add_text(slide, "최종 학습 / 제출", 0.63, 4.70, 1.55, 0.30, size=12, color=GOLD, bold=True)
+    add_text(slide, "최종 학습 / 2025 실전 추론", 0.63, 4.70, 3.0, 0.30, size=12, color=GOLD, bold=True)
     for i, season in enumerate(seasons):
         x = x0 + i * 1.45
         add_rect(slide, x, 5.20, 1.05, 0.62, TEAL_DARK, radius=True)
@@ -242,247 +224,212 @@ def build_deck():
             add_line(slide, x + 1.05, 5.51, x + 1.42, 5.51, GRID, 1.3)
     add_text(slide, "→", 9.68, 5.26, 0.52, 0.36, size=22, color=MUTED, bold=True, align=PP_ALIGN.CENTER)
     add_rect(slide, 10.25, 5.08, 1.95, 0.86, PANEL_2, radius=True, line=GOLD, width=1.5)
-    add_text(slide, "2025\nPREDICT", 10.25, 5.22, 1.95, 0.52, size=13, color=GOLD, bold=True, align=PP_ALIGN.CENTER)
+    add_text(slide, "2025 TEST\nPREDICT", 10.25, 5.22, 1.95, 0.52, size=13, color=GOLD, bold=True, align=PP_ALIGN.CENTER)
     add_rect(slide, 0.66, 6.28, 11.97, 0.48, PANEL, radius=True)
-    add_text(slide, "검증 원칙  |  시즌 변화(drift)를 숨기는 random K-fold를 피하고, 운영 시점과 같은 방향으로 성능을 측정", 0.87, 6.40, 11.52, 0.24, size=11, color=MUTED)
+    add_text(slide, "검증 원칙  |  다년도 야구 데이터에서 랜덤 K-Fold는 미래 누수를 유발하므로, T_train < T_val 시계열 전이 검증만 채택", 0.87, 6.40, 11.52, 0.24, size=11, color=MUTED)
     add_footer(slide, 3)
 
-    # 04 — Features
+    # 04 — Feature Engineering
     slide = prs.slides.add_slide(blank); set_bg(slide)
-    add_header(slide, 4, "Feature engineering", "47개 공식 입력 + 24개 파생 + 2개 집계 + 8개 Trackman 편차 = 81개")
+    add_header(slide, 4, "Feature engineering", "공식 47개 + 파생 24개 + 집계 2개 + Trackman 8개 = 81개 핵심 피처")
     add_rect(slide, 0.60, 2.22, 3.15, 4.35, PANEL, radius=True, line=GRID)
     add_text(slide, "47", 0.86, 2.52, 1.10, 0.70, size=38, color=TEAL, bold=True)
     add_text(slide, "공식 입력 피처", 1.83, 2.72, 1.60, 0.32, size=14, bold=True)
-    add_bullet_list(slide, ["경기·카운트·점수", "주자·상황 중요도", "선수·팀·손잡이", "공식 asof_* 과거 이력"], 0.85, 3.54, 2.52, 2.20, size=13, gap=0.53)
+    add_bullet_list(slide, ["경기·카운트·점수차", "주자·이닝·레버리지(li)", "투수/타자/팀/손잡이", "공식 asof_* 과거 이력"], 0.85, 3.54, 2.52, 2.20, size=13, gap=0.53)
     add_text(slide, "+", 3.86, 3.80, 0.50, 0.60, size=32, color=MUTED, bold=True, align=PP_ALIGN.CENTER)
     add_rect(slide, 4.40, 2.22, 3.52, 4.35, PANEL, radius=True, line=GRID)
     add_text(slide, "24", 4.68, 2.52, 1.10, 0.70, size=38, color=GOLD, bold=True)
     add_text(slide, "상태·상호작용 파생", 5.72, 2.72, 1.85, 0.32, size=14, bold=True)
     feature_groups = [
-        ("상황", "count_state · scoring_pos_runner\nlate_inning · leverage pressure"),
+        ("상황 압박", "count_state · scoring_pos · li"),
         ("매치업", "좌/우 platoon · batter pressure"),
-        ("추세", "직전 1·3경기 성공률 delta"),
-        ("Cold-start", "결측 개수 · 결측 여부 · 이력 0"),
+        ("최근 추세", "직전 1·3경기 성공률 delta"),
+        ("Cold-start", "결측 개수 · 결측 여부 · 이력 0 플래그"),
     ]
     for i, (tag, desc) in enumerate(feature_groups):
         yy = 3.48 + i * 0.69
-        add_label(slide, tag, 4.69, yy, 0.78, color=GOLD, fill="222C47")
-        add_text(slide, desc, 5.62, yy - 0.01, 1.96, 0.55, size=10, color=INK, bold=True)
+        add_label(slide, tag, 4.69, yy, 0.90, color=GOLD, fill="222C47")
+        add_text(slide, desc, 5.75, yy - 0.01, 1.85, 0.55, size=10, color=INK, bold=True)
     add_text(slide, "=", 8.06, 3.80, 0.50, 0.60, size=32, color=MUTED, bold=True, align=PP_ALIGN.CENTER)
     add_rect(slide, 8.62, 2.22, 4.10, 4.35, "11222D", radius=True, line=TEAL_DARK, width=1.5)
     add_text(slide, "81", 8.98, 2.42, 1.78, 0.90, size=52, color=TEAL, bold=True)
-    add_text(slide, "FINAL FEATURES", 10.55, 2.80, 1.60, 0.30, size=11, color=MUTED, bold=True)
+    add_text(slide, "TOTAL FEATURES", 10.45, 2.80, 2.00, 0.30, size=11, color=MUTED, bold=True)
     add_line(slide, 8.98, 3.42, 12.33, 3.42, TEAL_DARK, 1.1)
-    add_bullet_list(slide, ["row_id · target 제외", "결측 자체를 정보로 유지", "test 통계·빈도·순위 미사용", "학습·추론 동일 함수/순서"], 9.00, 3.78, 3.10, 2.25, size=12, gap=0.52)
-    add_text(slide, "모든 파생값은 해당 행의 입력 컬럼만으로 계산", 9.00, 6.03, 3.08, 0.28, size=10, color=TEAL, bold=True)
+    add_bullet_list(slide, ["row_id · target 제외", "결측 자체를 정보로 유지", "test 통계·빈도·순위 미사용", "학습·추론 동일 함수/순서 보장"], 9.00, 3.78, 3.10, 2.25, size=12, gap=0.52)
+    add_text(slide, "모든 파생값은 해당 단일 행의 입력 컬럼만으로 계산", 9.00, 6.03, 3.30, 0.28, size=10, color=TEAL, bold=True)
     add_footer(slide, 4)
 
-    # 05 — Architecture
+    # 05 — Architecture: 3-Tier Multi-Family GBDT Super Ensemble
     slide = prs.slides.add_slide(blank); set_bg(slide)
-    add_header(slide, 5, "Model architecture", "ASOF 상태·상호작용·조건부 집계를 단일 CatBoost에 결합")
-    add_rect(slide, 0.62, 2.65, 2.15, 1.16, PANEL, radius=True, line=GRID)
-    add_text(slide, "81 FEATURES", 0.62, 2.88, 2.15, 0.28, size=12, color=TEAL, bold=True, align=PP_ALIGN.CENTER)
-    add_text(slide, "현재 행 단위", 0.62, 3.22, 2.15, 0.24, size=10, color=MUTED, align=PP_ALIGN.CENTER)
-    add_line(slide, 2.78, 3.23, 3.48, 3.23, TEAL_DARK, 2.0)
-    add_line(slide, 3.48, 3.23, 3.48, 2.72, TEAL_DARK, 1.5)
-    add_line(slide, 3.48, 3.23, 3.48, 4.44, TEAL_DARK, 1.5)
-    add_rect(slide, 3.70, 2.15, 2.44, 1.17, PANEL_2, radius=True, line=BLUE)
-    add_text(slide, "ASOF + 상태", 3.70, 2.44, 2.44, 0.32, size=17, color=BLUE, bold=True, align=PP_ALIGN.CENTER)
-    add_text(slide, "73 features", 3.70, 2.86, 2.44, 0.22, size=10, color=MUTED, align=PP_ALIGN.CENTER)
-    add_rect(slide, 3.70, 4.02, 2.44, 1.17, PANEL_2, radius=True, line=CORAL)
-    add_text(slide, "조건부 집계", 3.70, 4.30, 2.44, 0.32, size=17, color=CORAL, bold=True, align=PP_ALIGN.CENTER)
-    add_text(slide, "+ 8 Trackman", 3.70, 4.72, 2.44, 0.22, size=10, color=MUTED, align=PP_ALIGN.CENTER)
-    add_line(slide, 6.15, 2.74, 7.02, 2.74, BLUE, 1.6)
-    add_line(slide, 6.15, 4.60, 7.02, 4.60, CORAL, 1.6)
-    add_rect(slide, 7.02, 2.28, 2.05, 2.78, "10182C", radius=True, line=GOLD, width=1.4)
-    add_text(slide, "feature merge", 7.02, 2.57, 2.05, 0.28, size=11, color=GOLD, bold=True, align=PP_ALIGN.CENTER)
-    add_text(slide, "A", 7.35, 3.14, 0.40, 0.40, size=22, color=CORAL, bold=True, align=PP_ALIGN.CENTER)
-    add_text(slide, "→ 상태", 7.70, 3.19, 1.05, 0.28, size=11, color=INK, bold=True)
-    add_line(slide, 7.30, 3.75, 8.80, 3.75, GRID, 0.8)
-    add_text(slide, "B", 7.35, 4.05, 0.40, 0.40, size=22, color=TEAL, bold=True, align=PP_ALIGN.CENTER)
-    add_text(slide, "→ 집계", 7.70, 4.10, 1.05, 0.28, size=11, color=INK, bold=True)
-    add_line(slide, 9.10, 3.67, 9.75, 3.67, GOLD, 2.0)
-    add_rect(slide, 9.78, 2.95, 2.94, 1.45, "11222D", radius=True, line=TEAL, width=1.6)
-    add_text(slide, "CatBoost · 300 trees", 9.78, 3.27, 2.94, 0.32, size=15, color=TEAL, bold=True, align=PP_ALIGN.CENTER)
-    add_text(slide, "0 ≤ p ≤ 1", 9.78, 3.76, 2.94, 0.24, size=11, color=MUTED, align=PP_ALIGN.CENTER)
-    add_rect(slide, 0.65, 5.72, 12.02, 0.72, PANEL, radius=True)
-    add_text(slide, "규칙은 검증 전에 고정  ·  연속 가중치 탐색 없음  ·  test 예측 분포를 이용한 선택/보정 없음", 0.90, 5.94, 11.55, 0.26, size=12, color=MUTED, bold=True, align=PP_ALIGN.CENTER)
+    add_header(slide, 5, "Model architecture", "3-Tier Multi-Family GBDT Super Ensemble & Adaptive Gate")
+    add_rect(slide, 0.62, 2.25, 3.60, 4.40, PANEL, radius=True, line=GRID)
+    add_card_title(slide, "Tier 1: Base & Specialists", 0.85, 2.50, 3.10, color=BLUE)
+    add_bullet_list(slide, [
+        "CatBoost 36-Seed Base (3-Channel)",
+        "Futures 16-Model Regime Specialists",
+        "3-Subtype Multi-Task Classifiers",
+        "Psychological Latent Ridge Regressor"
+    ], 0.85, 3.00, 3.15, 3.40, size=11, gap=0.80)
+
+    add_rect(slide, 4.60, 2.25, 3.80, 4.40, PANEL, radius=True, line=GRID)
+    add_card_title(slide, "Tier 2: Multi-Family & Blending", 4.85, 2.50, 3.30, color=GOLD)
+    add_bullet_list(slide, [
+        "LightGBM 1군 Regular R-Expert",
+        "XGBoost Multi-Family Regressor",
+        "Direct Brier Simplex Optimization",
+        "Disjoint Matchup Empirical Bayes (113A)"
+    ], 4.85, 3.00, 3.30, 3.40, size=11, gap=0.80)
+
+    add_rect(slide, 8.80, 2.25, 3.90, 4.40, "11222D", radius=True, line=TEAL, width=1.5)
+    add_card_title(slide, "Tier 3: Adaptive Meta Gate", 9.05, 2.50, 3.40, color=TEAL)
+    add_bullet_list(slide, [
+        "Zero-Centered Adaptive Meta Gate (scale=0.05)",
+        "카운트/레버리지/상황 적응형 비선형 게이팅",
+        "1군/2군 Macro-Leap Decoupling",
+        "Global Calibration Shift (+0.0052)"
+    ], 9.05, 3.00, 3.40, 3.40, size=11, gap=0.80)
     add_footer(slide, 5)
 
-    # 06 — Results
+    # 06 — Decoupling & Disjoint EB Engine
+    slide = prs.slides.add_slide(blank); set_bg(slide)
+    add_header(slide, 6, "Specialization engine", "1군·2군 완전 디커플링 및 Disjoint Matchup EB 엔진")
+    add_rect(slide, 0.62, 2.22, 5.80, 4.45, PANEL, radius=True, line=GRID)
+    add_card_title(slide, "1군/2군 Macro-Leap Decoupling", 0.88, 2.50, 5.20, color=TEAL)
+    add_bullet_list(slide, [
+        "1군(Regular ~88%)과 2군(Futures ~12%)의 리그 성격 완전 분리",
+        "1군: 36 CatBoost Base + LightGBM Expert + Adaptive Gate",
+        "2군: 16 Futures CatBoost + 3 Subtypes + Psych Latent",
+        "리그 간 혼선 방지로 2군 OOF BSS +3172.81pt 폭증 달성",
+        "2025년 신인/이적 선수 분포 왜곡 사전 차단"
+    ], 0.88, 3.10, 5.20, 3.30, size=11, gap=0.60)
+
+    add_rect(slide, 6.82, 2.22, 5.85, 4.45, PANEL, radius=True, line=GRID)
+    add_card_title(slide, "Disjoint Matchup Empirical Bayes (113A)", 7.08, 2.50, 5.20, color=GOLD)
+    add_bullet_list(slide, [
+        "투수-타자 상대전적 불균형에 대한 수축(Shrinkage) 추정",
+        "소표본 매치업 과적합을 방지하는 정규화 EB 룩업",
+        "Brier Simplex 가중치 최적화 결합 (w_eb = 0.035)",
+        "단일 행 격리 추론 및 완전 무누수 사전 생성",
+        "최종 리더보드 1121.90399점 달성의 핵심 기여 엔진"
+    ], 7.08, 3.10, 5.20, 3.30, size=11, gap=0.60)
+    add_footer(slide, 6)
+
+    # 07 — Leaderboard Progression
     slide = prs.slides.add_slide(blank); set_bg(slide)
     add_header(
         slide,
-        6,
-        "Temporal validation",
-        "시간 전이 검증으로 보정식의 재현성을 확인",
-        "SUB-002 공식 886.2488171351점  ·  신규 후보 867.3538231619점으로 롤백",
+        7,
+        "Leaderboard progression",
+        "815점 베이스라인에서 1121.90점 최종 챔피언까지의 진화",
+        "공식 최고 점수: 1121.9039933605점 (submit_ref4_super113A.zip / Public 180위)",
     )
-    # chart panel
-    add_rect(slide, 0.62, 2.22, 7.18, 4.47, PANEL, radius=True, line=GRID)
-    add_text(slide, "Brier Skill Score", 0.88, 2.46, 2.4, 0.28, size=13, bold=True)
-    add_text(slide, "높을수록 우수", 2.73, 2.48, 1.30, 0.23, size=9, color=MUTED)
-    chart_x, chart_y, chart_w, chart_h = 1.18, 3.06, 6.15, 2.76
-    min_v, max_v = -0.0045, 0.0080
-    zero_y = chart_y + chart_h * (max_v / (max_v - min_v))
-    for val in [-0.004, 0.0, 0.004, 0.008]:
-        yy = chart_y + chart_h * ((max_v - val) / (max_v - min_v))
-        add_line(slide, chart_x, yy, chart_x + chart_w, yy, GRID if val != 0 else MUTED, 0.8 if val != 0 else 1.2)
-        add_text(slide, f"{val:.3f}", 0.73, yy - 0.11, 0.40, 0.22, size=8, color=MUTED, align=PP_ALIGN.RIGHT)
-    series = {
-        "2023": [("SUB1", 0.001142785, CORAL), ("SUB2", 0.004089905, TEAL)],
-        "2024": [("SUB1", 0.007384811, CORAL), ("SUB2", 0.007593591, TEAL)],
-    }
-    gx = [1.55, 4.55]
-    for group_idx, (season, vals) in enumerate(series.items()):
-        for i, (name, val, color) in enumerate(vals):
-            x = gx[group_idx] + i * 0.67
-            val_y = chart_y + chart_h * ((max_v - val) / (max_v - min_v))
-            if val >= 0:
-                top, height = val_y, zero_y - val_y
-            else:
-                top, height = zero_y, val_y - zero_y
-            add_rect(slide, x, top, 0.46, max(height, 0.02), color, radius=True)
-            add_text(slide, name, x - 0.10, chart_y + chart_h + 0.08, 0.65, 0.22, size=8, color=MUTED, bold=(name == "SUB2"), align=PP_ALIGN.CENTER)
-        add_text(slide, season, gx[group_idx] + 0.41, 6.18, 1.10, 0.26, size=11, color=INK, bold=True, align=PP_ALIGN.CENTER)
-    # right-side metrics
-    add_rect(slide, 8.08, 2.22, 4.64, 4.47, "10182C", radius=True, line=GRID)
-    add_text(slide, "정확한 검증 수치", 8.40, 2.47, 2.10, 0.30, size=13, bold=True)
-    headers = ["SEASON", "MODEL", "BRIER ↓", "BSS ↑"]
-    xs = [8.38, 9.28, 10.22, 11.37]
-    ws = [0.80, 0.86, 1.05, 0.95]
+    headers = ["STAGE / VERSION", "KEY MECHANISM", "LB SCORE", "DELTA"]
+    xs = [0.80, 4.20, 9.20, 11.20]
+    ws = [3.20, 4.80, 1.80, 1.40]
     for t, x, w in zip(headers, xs, ws):
-        add_text(slide, t, x, 2.93, w, 0.24, size=8, color=MUTED, bold=True, align=PP_ALIGN.RIGHT if "↓" in t or "↑" in t else PP_ALIGN.LEFT)
-    rows = [
-        ("2023", "SUB-001", "0.249714", "0.001143", CORAL),
-        ("", "SUB-002", "0.248978", "0.004090", TEAL),
-        ("2024", "SUB-001", "0.247962", "0.007385", CORAL),
-        ("", "SUB-002", "0.247910", "0.007594", TEAL),
+        add_text(slide, t, x, 2.20, w, 0.24, size=9, color=MUTED, bold=True)
+    
+    stages = [
+        ("SUB-001 (Baseline)", "공식 47개 피처 LightGBM 베이스라인", "815.20127", "기준선", MUTED),
+        ("SUB-002 (Regime R)", "Regime R-Capacity + Platt Calibration", "886.24881", "+71.0475", MUTED),
+        ("EXP-030 (Champion Stack)", "3-Channel 6-Seed Residual + Shift (+0.0052)", "1068.25021", "+182.0014", TEAL),
+        ("EXP-071 (Adaptive Gate)", "Zero-Centered Adaptive Multi-Channel Gate", "1092.18790", "+23.9377", TEAL),
+        ("EXP-102 (Deep Hierarchical)", "Deep 61 Features + Multi-Seed Specialist", "1105.82017", "+13.6323", BLUE),
+        ("EXP-107 (Super Ensemble)", "Multi-Family Simplex Super Blend (Top 174)", "1115.25607", "+9.4359", GOLD),
+        ("EXP-109C (Tri-Family)", "Hyper-Regime Tri-Bridge 15-Model Tri-Family", "1120.89145", "+5.6354", GOLD),
+        ("EXP-113A (Final Champion)", "Disjoint Matchup Empirical Bayes + 112C Base", "1121.90399", "+1.0125", CORAL),
     ]
-    for i, row in enumerate(rows):
-        yy = 3.38 + i * 0.58
-        if i in (1, 3):
-            add_rect(slide, 8.27, yy - 0.06, 4.14, 0.44, "142C34", radius=True)
-        for j, (value, x, w) in enumerate(zip(row[:4], xs, ws)):
-            align = PP_ALIGN.RIGHT if j >= 2 else PP_ALIGN.LEFT
-            add_text(slide, value, x, yy, w, 0.24, size=9, color=row[4] if j == 1 else INK, bold=(i in (1,3)), align=align)
-    add_line(slide, 8.34, 5.91, 12.39, 5.91, GRID, 0.8)
-    add_text(slide, "SUB-001 대비 Brier 개선", 8.38, 6.08, 2.18, 0.24, size=9, color=MUTED)
-    add_text(slide, "2023  −0.000737", 10.50, 6.02, 1.82, 0.22, size=10, color=TEAL, bold=True, align=PP_ALIGN.RIGHT)
-    add_text(slide, "2024  −0.000052", 10.50, 6.30, 1.82, 0.22, size=10, color=TEAL, bold=True, align=PP_ALIGN.RIGHT)
-    add_footer(slide, 6)
-
-    # 07 — Experiment decisions
-    slide = prs.slides.add_slide(blank); set_bg(slide)
-    add_header(slide, 7, "Experiment discipline", "좋았던 아이디어보다 ‘미래 시즌에 반복된 개선’을 채택")
-    add_text(slide, "채택", 0.65, 2.24, 1.0, 0.30, size=13, color=TEAL, bold=True)
-    adopted = [
-        ("FE-001", "24개 상태·상호작용 파생", "행 독립성 검증 통과"),
-        ("CatBoost", "범주형 변수의 안정적 처리", "2023·2024에서 강한 단일 모델"),
-        ("COMBO-TM-FULL-006", "81개 피처 전체 학습", "ZIP·전이·감사 통과"),
-    ]
-    for i, (tag, title, note) in enumerate(adopted):
-        y = 2.66 + i * 1.18
-        add_rect(slide, 0.65, y, 5.70, 0.92, "11292C", radius=True, line=TEAL_DARK)
-        add_label(slide, tag, 0.88, y + 0.17, 1.20, color=TEAL, fill="183C3D")
-        add_text(slide, title, 2.27, y + 0.13, 2.70, 0.30, size=13, bold=True)
-        add_text(slide, note, 2.27, y + 0.50, 3.60, 0.22, size=9, color=MUTED)
-    add_text(slide, "미채택", 6.93, 2.24, 1.0, 0.30, size=13, color=CORAL, bold=True)
-    rejected = [
-        ("Season weighting", "감쇠 0.85/0.70", "2024 성능 저하"),
-        ("Target aggregates", "투수·타자 조건부 통계", "2023 개선 미확인"),
-        ("Recent blend", "전체 75% + 최근 25%", "추가 개선 0.0000028"),
-        ("Support gate", "선택적 임계값", "전 시즌 일관성 부족"),
-    ]
-    for i, (tag, title, note) in enumerate(rejected):
-        y = 2.66 + i * 0.88
-        add_rect(slide, 6.93, y, 5.73, 0.67, PANEL, radius=True, line=GRID)
-        add_text(slide, tag, 7.18, y + 0.14, 1.45, 0.25, size=10, color=CORAL, bold=True)
-        add_text(slide, title, 8.70, y + 0.11, 2.08, 0.25, size=11, bold=True)
-        add_text(slide, note, 10.80, y + 0.14, 1.48, 0.22, size=9, color=MUTED, align=PP_ALIGN.RIGHT)
-    add_rect(slide, 6.93, 6.02, 5.73, 0.58, "241D28", radius=True)
-    add_text(slide, "SUB-002 공식 886.2488171351  |  신규 867.3538231619", 7.12, 6.12, 5.35, 0.20, size=8, color=GOLD, bold=True, align=PP_ALIGN.CENTER)
-    add_text(slide, "신규 후보 −18.8949949382  ·  SUB-002 롤백", 7.12, 6.36, 5.35, 0.18, size=8, color=CORAL, bold=True, align=PP_ALIGN.CENTER)
+    for i, (name, mech, score, delta, color) in enumerate(stages):
+        yy = 2.65 + i * 0.52
+        if i == len(stages) - 1:
+            add_rect(slide, 0.65, yy - 0.05, 12.00, 0.44, "1F2E3B", radius=True, line=CORAL)
+        add_text(slide, name, xs[0], yy, ws[0], 0.24, size=10, color=color, bold=(i >= 5))
+        add_text(slide, mech, xs[1], yy, ws[1], 0.24, size=9, color=INK)
+        add_text(slide, score, xs[2], yy, ws[2], 0.24, size=10, color=color, bold=True)
+        add_text(slide, delta, xs[3], yy, ws[3], 0.24, size=9, color=color, bold=True)
     add_footer(slide, 7)
 
-    # 08 — Independence & compliance
+    # 08 — Inference Integrity & Row-Independence
     slide = prs.slides.add_slide(blank); set_bg(slide)
-    add_header(slide, 8, "Inference integrity", "평가 데이터의 각 행을 완전히 독립적으로 예측")
-    add_text(slide, "test.csv", 0.65, 2.27, 1.50, 0.32, size=13, color=TEAL, bold=True)
+    add_header(slide, 8, "Inference integrity", "평가 데이터의 각 행을 100% 완전 독립적으로 예측")
     for i in range(4):
-        y = 2.79 + i * 0.64
-        add_rect(slide, 0.68, y, 2.42, 0.44, PANEL_2, radius=True, line=GRID)
-        add_text(slide, f"row {i+1:02d}  ·  current inputs", 0.86, y + 0.10, 1.98, 0.20, size=9, color=INK, font=FONT_MONO)
-        add_line(slide, 3.11, y + 0.22, 3.67, y + 0.22, TEAL_DARK, 1.2)
-        add_rect(slide, 3.67, y, 2.20, 0.44, "11292C", radius=True)
-        add_text(slide, "build_features(row)", 3.78, y + 0.10, 1.95, 0.20, size=9, color=TEAL, bold=True, font=FONT_MONO)
-        add_line(slide, 5.88, y + 0.22, 6.42, y + 0.22, TEAL_DARK, 1.2)
-        add_rect(slide, 6.42, y, 2.15, 0.44, PANEL, radius=True)
-        add_text(slide, "fixed models", 6.42, y + 0.10, 2.15, 0.20, size=9, color=INK, bold=True, align=PP_ALIGN.CENTER)
-        add_line(slide, 8.58, y + 0.22, 9.12, y + 0.22, TEAL_DARK, 1.2)
-        add_rect(slide, 9.12, y, 1.47, 0.44, "11222D", radius=True)
-        add_text(slide, f"p{i+1}", 9.12, y + 0.10, 1.47, 0.20, size=10, color=TEAL, bold=True, align=PP_ALIGN.CENTER)
-    add_rect(slide, 10.92, 2.60, 1.71, 3.05, "241A25", radius=True, line=CORAL, width=1.2)
-    add_text(slide, "NO", 10.92, 2.93, 1.71, 0.42, size=23, color=CORAL, bold=True, align=PP_ALIGN.CENTER)
-    add_bullet_list(slide, ["test groupby", "rolling / lag", "batch statistics", "inference fit", "distribution calibration"], 11.12, 3.63, 1.34, 1.70, size=9, bullet_color=CORAL, gap=0.31)
-    add_rect(slide, 0.67, 5.78, 9.91, 0.72, PANEL, radius=True)
-    checks = [("배치=단독", "max diff 0.0"), ("순서 변경", "동일 예측"), ("무관행 추가", "동일 예측")]
+        y = 2.55 + i * 0.70
+        add_rect(slide, 0.68, y, 2.42, 0.48, PANEL_2, radius=True, line=GRID)
+        add_text(slide, f"row {i+1:02d}  ·  current inputs", 0.86, y + 0.12, 1.98, 0.20, size=9, color=INK, font=FONT_MONO)
+        add_line(slide, 3.11, y + 0.24, 3.67, y + 0.24, TEAL_DARK, 1.2)
+        add_rect(slide, 3.67, y, 2.30, 0.48, "11292C", radius=True)
+        add_text(slide, "build_features(row)", 3.78, y + 0.12, 2.10, 0.20, size=9, color=TEAL, bold=True, font=FONT_MONO)
+        add_line(slide, 5.98, y + 0.24, 6.42, y + 0.24, TEAL_DARK, 1.2)
+        add_rect(slide, 6.42, y, 2.15, 0.48, PANEL, radius=True)
+        add_text(slide, "fixed ensemble", 6.42, y + 0.12, 2.15, 0.20, size=9, color=INK, bold=True, align=PP_ALIGN.CENTER)
+        add_line(slide, 8.58, y + 0.24, 9.12, y + 0.24, TEAL_DARK, 1.2)
+        add_rect(slide, 9.12, y, 1.47, 0.48, "11222D", radius=True)
+        add_text(slide, f"p{i+1}", 9.12, y + 0.12, 1.47, 0.20, size=10, color=TEAL, bold=True, align=PP_ALIGN.CENTER)
+    add_rect(slide, 10.85, 2.40, 1.85, 3.30, "241A25", radius=True, line=CORAL, width=1.2)
+    add_text(slide, "금지 항목", 10.85, 2.65, 1.85, 0.35, size=16, color=CORAL, bold=True, align=PP_ALIGN.CENTER)
+    add_bullet_list(slide, ["test groupby", "rolling / shift", "batch statistics", "inference fit", "distribution scale"], 10.98, 3.20, 1.60, 2.30, size=9, bullet_color=CORAL, gap=0.38)
+    add_rect(slide, 0.67, 5.75, 12.00, 0.75, PANEL, radius=True)
+    checks = [
+        ("배치 추론 = 단독 추론", "max diff: 0.000e+00 (PASS)"),
+        ("행 순서 변경 (Shuffled)", "max diff: 0.000e+00 (PASS)"),
+        ("단일 행 격리 추론", "max diff: 1.110e-16 (PASS)")
+    ]
     for i, (title, note) in enumerate(checks):
-        x = 0.92 + i * 3.20
+        x = 0.92 + i * 4.00
         add_text(slide, "✓", x, 5.96, 0.32, 0.24, size=14, color=TEAL, bold=True)
-        add_text(slide, title, x + 0.34, 5.92, 1.15, 0.26, size=10, color=INK, bold=True)
-        add_text(slide, note, x + 1.50, 5.94, 1.20, 0.22, size=9, color=MUTED)
+        add_text(slide, title, x + 0.34, 5.92, 1.85, 0.26, size=10, color=INK, bold=True)
+        add_text(slide, note, x + 0.34, 6.18, 2.50, 0.22, size=9, color=MUTED)
     add_footer(slide, 8)
 
-    # 09 — Reproducibility
+    # 09 — Reproducibility & Fail-Fast Contract
     slide = prs.slides.add_slide(blank); set_bg(slide)
-    add_header(slide, 9, "Reproducibility", "실행 환경·모델 계약·성능 게이트를 제출물 안에 고정")
+    add_header(slide, 9, "Reproducibility", "실행 환경·의존성·Fail-Fast 무결성 계약을 제출물에 고정")
     metrics = [
-        ("1,475,092 rows", "전체 학습 행", TEAL),
-        ("81 features", "모델 피처 계약", GOLD),
-        ("8 members", "제출 ZIP 구성", BLUE),
-        ("AUDIT VERIFIED", "내부 감사 상태", CORAL),
+        ("1,475,092 rows", "전체 학습 행 수", TEAL),
+        ("81 features", "최종 피처 계약", GOLD),
+        ("Multi-Family", "CatBoost + LGBM + XGB", BLUE),
+        ("AUDIT VERIFIED", "내부 무결성 감사", CORAL),
     ]
     for i, (value, label, color) in enumerate(metrics):
         x = 0.62 + i * 3.04
         add_rect(slide, x, 2.22, 2.70, 1.18, PANEL, radius=True, line=GRID)
-        add_text(slide, value, x + 0.20, 2.52, 2.28, 0.34, size=18, color=color, bold=True, align=PP_ALIGN.CENTER)
+        add_text(slide, value, x + 0.20, 2.52, 2.28, 0.34, size=16, color=color, bold=True, align=PP_ALIGN.CENTER)
         add_text(slide, label, x + 0.20, 2.96, 2.28, 0.22, size=9, color=MUTED, align=PP_ALIGN.CENTER)
     add_rect(slide, 0.62, 3.78, 5.92, 2.62, "10182C", radius=True, line=GRID)
-    add_card_title(slide, "제출 실행 환경", 0.92, 4.06, 2.20)
+    add_card_title(slide, "제출 실행 환경 명세", 0.92, 4.06, 2.50)
     env_rows = [
-        ("Language", "Python 3.11.15"),
-        ("CatBoost", "1.2.10"),
-        ("Model", "CatBoost · 300 trees · 81 features"),
-        ("Network", "미사용 · 외부 API 없음"),
+        ("Environment", "Ubuntu 22.04 / Python 3.11"),
+        ("Engines", "CatBoost 1.2.10, LightGBM 4.0+, XGBoost 1.7+"),
+        ("Requirements", "requirements.txt 완전 번들링"),
+        ("Execution Time", "245K행 기준 ~1분 내외 완료 (10분 한도 여유)"),
     ]
     for i, (key, value) in enumerate(env_rows):
         yy = 4.53 + i * 0.42
-        add_text(slide, key, 0.95, yy, 1.18, 0.22, size=9, color=MUTED, font=FONT_MONO)
-        add_text(slide, value, 2.25, yy, 3.83, 0.22, size=10, color=INK, bold=True)
+        add_text(slide, key, 0.95, yy, 1.40, 0.22, size=8, color=MUTED, font=FONT_MONO)
+        add_text(slide, value, 2.40, yy, 3.83, 0.22, size=9, color=INK, bold=True)
     add_rect(slide, 6.82, 3.78, 5.90, 2.62, "10182C", radius=True, line=GRID)
-    add_card_title(slide, "Fail-fast 제출 계약", 7.12, 4.06, 2.40, color=GOLD)
+    add_card_title(slide, "Fail-Fast 제출 무결성 계약", 7.12, 4.06, 3.00, color=GOLD)
     add_bullet_list(slide, [
-        "입력·피처 개수/순서/ID 계약 검증",
-        "모델 및 feature_columns SHA-256 검증",
-        "NaN·Inf·범위 밖 확률 즉시 실패",
-        "출력 2개 컬럼 및 입력 row 순서 보존",
-    ], 7.11, 4.51, 5.02, 1.75, size=11, bullet_color=GOLD, gap=0.41)
+        "입력/피처 컬럼 개수, 순서, ID 계약 자동 검증",
+        "NaN·Inf·범위 이탈([0, 1]) 예측 발생 시 즉시 실패",
+        "출력 2개 컬럼(row_id, control_success) 및 입력 순서 100% 보존",
+        "오프라인 단독 구동 및 네트워크 외부 호출 0건",
+    ], 7.11, 4.51, 5.20, 1.75, size=10, bullet_color=GOLD, gap=0.41)
     add_rect(slide, 0.64, 6.64, 12.03, 0.31, "12262B", radius=True)
-    add_text(slide, "ZIP 감사: AUDIT_VERIFIED  ·  행 독립성/재현성 검증 통과  ·  공식 점수 확인 전 HOLD", 0.87, 6.69, 11.60, 0.19, size=9, color=TEAL, bold=True, align=PP_ALIGN.CENTER)
+    add_text(slide, "ZIP 감사: AUDIT_VERIFIED  ·  행 독립성/재현성 검증 통과  ·  최종 제출: submit_ref4_super113A.zip", 0.87, 6.69, 11.60, 0.19, size=9, color=TEAL, bold=True, align=PP_ALIGN.CENTER)
     add_footer(slide, 9)
 
-    # 10 — Conclusion / participation
+    # 10 — Conclusion / Final Summary
     slide = prs.slides.add_slide(blank); set_bg(slide)
     add_text(slide, "10", 0.58, 0.45, 0.45, 0.28, size=11, color=TEAL, bold=True)
     add_text(slide, "CONCLUSION", 1.07, 0.45, 2.0, 0.28, size=10, color=MUTED, bold=True)
-    add_text(slide, "미래 시즌에도 흔들리지 않는 확률을 위해", 0.60, 1.03, 8.20, 0.62, size=29, bold=True)
-    add_text(slide, "복잡도보다 검증 방향, 일관성, 추론 무결성을 우선했습니다.", 0.62, 1.72, 8.10, 0.40, size=15, color=MUTED)
+    add_text(slide, "미래 시즌에도 흔들리지 않는 제구 성공 확률 예측", 0.60, 1.03, 9.00, 0.62, size=28, bold=True)
+    add_text(slide, "엄격한 시계열 검증, 완전한 행 독립성, 3-Tier Multi-Family GBDT로 완성", 0.62, 1.72, 9.00, 0.40, size=14, color=MUTED)
     takeaways = [
-        ("01", "TIME-AWARE", "2019–2023 → 2024\n미래 방향 검증"),
-        ("02", "ROW-INDEPENDENT", "현재 행만으로 생성하는\n상태·상호작용 피처"),
-        ("03", "COMBO-TM-FULL-006", "81개 피처 전체 학습\nTrackman train-only 번들"),
-        ("04", "REPRODUCIBLE", "ZIP·행 독립성 검증\n공식 점수 대기"),
+        ("01", "TIME-AWARE", "2019–2023 → 2024\n엄격한 시간 전이 검증"),
+        ("02", "ROW-INDEPENDENT", "단일 행 독립 피처링\n오차 0.000e+00 달성"),
+        ("03", "MULTI-FAMILY", "CatBoost + LGBM + XGB\nDisjoint EB Super Blend"),
+        ("04", "FINAL 1121.90pt", "BSS 1121.903993점 달성\nPublic 180위 완주"),
     ]
     for i, (num, title, note) in enumerate(takeaways):
         x = 0.62 + i * 3.03
@@ -491,21 +438,25 @@ def build_deck():
         add_text(slide, title, x + 0.63, 2.77, 1.80, 0.28, size=10, color=INK, bold=True)
         add_text(slide, note, x + 0.20, 3.30, 2.28, 0.54, size=11, color=MUTED, bold=True, align=PP_ALIGN.CENTER)
     add_rect(slide, 0.62, 4.63, 12.10, 1.70, "241A25", radius=True, line=CORAL, width=1.6)
-    add_text(slide, "오프라인 해커톤(Phase 3) 참가 여부", 0.96, 4.99, 7.15, 0.36, size=17, color=INK, bold=True)
+    add_text(slide, "Phase 3 오프라인 해커톤 참가 여부", 0.96, 4.99, 7.15, 0.36, size=17, color=INK, bold=True)
     add_text(slide, "아니요", 9.08, 4.87, 2.76, 0.66, size=34, color=CORAL, bold=True, align=PP_ALIGN.CENTER)
-    add_text(slide, "본 PPT는 온라인 해커톤(Phase 2) 솔루션 설명 및 코드 검증용 제출 자료입니다. 신규 ZIP은 승인 전 보류합니다.", 0.96, 5.62, 8.25, 0.28, size=11, color=MUTED)
+    add_text(slide, "본 발표자료는 온라인 해커톤(Phase 2) 최종 솔루션 설명 및 코드 검증용 제출 자료입니다.", 0.96, 5.62, 8.25, 0.28, size=11, color=MUTED)
     add_text(slide, "THANK YOU", 0.63, 6.72, 2.2, 0.27, size=10, color=TEAL, bold=True)
-    add_text(slide, "제출자  김재호   |   팀명  나란차", 8.12, 6.69, 4.34, 0.28, size=10, color=MUTED, bold=True, align=PP_ALIGN.RIGHT)
+    add_text(slide, "제출자  김재호   |   팀명  나란차   |   최종 점수  1121.9039933605점 (180위)", 6.00, 6.69, 6.46, 0.28, size=10, color=MUTED, bold=True, align=PP_ALIGN.RIGHT)
     add_footer(slide, 10)
 
-    # Ensure all slides have deterministic title metadata.
     for idx, s in enumerate(prs.slides, start=1):
         s.name = f"Solution {idx:02d}"
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     prs.save(OUTPUT)
-    print(OUTPUT)
+    print(f"Saved: {OUTPUT}")
+    
+    SOLUTION_PPTX.parent.mkdir(parents=True, exist_ok=True)
+    prs.save(SOLUTION_PPTX)
+    print(f"Saved: {SOLUTION_PPTX}")
 
 
 if __name__ == "__main__":
     build_deck()
+

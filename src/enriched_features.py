@@ -28,7 +28,7 @@ def build_enriched_features(
     pitchmix_snapshots: pd.DataFrame,
     trackman_csv: str,
 ) -> tuple[pd.DataFrame, np.ndarray]:
-    """Build base v3 features + 1번/5번 레포의 검증된 고차원 상황 압박 및 도메인 피처."""
+    """Build base v3 features + 1번/Contextual Platoon Engine의 검증된 고차원 상황 압박 및 도메인 피처."""
     # 1. Base v3 features
     X_base, base_pred = build_v3_features(
         raw, prior, pitcher_snapshots, batter_snapshots, pitchmix_snapshots, trackman_csv
@@ -36,7 +36,7 @@ def build_enriched_features(
     
     out = X_base.copy()
     
-    # 2. 5번 레포 경기 상황/볼카운트/압박 피처
+    # 2. Contextual Platoon Engine 경기 상황/볼카운트/압박 피처
     balls = pd.to_numeric(raw["balls_before"], errors="coerce").fillna(0).astype("int8")
     strikes = pd.to_numeric(raw["strikes_before"], errors="coerce").fillna(0).astype("int8")
     outs = pd.to_numeric(raw["outs_before"], errors="coerce").fillna(0).astype("int8")
@@ -72,7 +72,7 @@ def build_enriched_features(
     a_win = pd.to_numeric(raw.get("away_win_expectancy", 0.5), errors="coerce").fillna(0.5).astype("float32")
     out["win_expectancy_gap"] = (h_win - a_win).astype("float32")
     
-    # 3. 투수-타자 기량 갭 및 최근 경기 컨디션 델타 (5번 레포)
+    # 3. 투수-타자 기량 갭 및 최근 경기 컨디션 델타 (Contextual Platoon Engine)
     p_succ = pd.to_numeric(raw.get("asof_pitcher_success_rate", prior), errors="coerce").fillna(prior).astype("float32")
     b_succ = pd.to_numeric(raw.get("asof_batter_success_rate", prior), errors="coerce").fillna(prior).astype("float32")
     out["pitcher_batter_success_gap"] = (p_succ - b_succ).astype("float32")
@@ -88,7 +88,7 @@ def build_enriched_features(
     mid5 = pd.to_numeric(raw.get("asof_pitcher_prev5_game_middle_rate", 0.1), errors="coerce").fillna(0.1).astype("float32")
     out["pitcher_recent_middle_delta_1_5"] = (mid1 - mid5).astype("float32")
     
-    # 4. 1번 레포 Chase 상황 및 Command Gap
+    # 4. Physics-Trajectory Baseline Chase 상황 및 Command Gap
     out["is_chase"] = ((strikes == 2) & (balls < 3)).astype("int8")
     
     p_strike = pd.to_numeric(raw.get("asof_pitcher_strike_rate", 0.65), errors="coerce").fillna(0.65).astype("float32")

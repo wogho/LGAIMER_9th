@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate adding 1번 레포 Physical/Trajectory/Release features to Residual Booster on 2024 Holdout."""
+"""Evaluate adding Physics-Trajectory Baseline Physical/Trajectory/Release features to Residual Booster on 2024 Holdout."""
 import gc, json, os, sys, time
 from pathlib import Path
 import numpy as np
@@ -15,7 +15,7 @@ from src.v5_deep_61_features import build_v5_deep_61_features
 from scripts.test_108a_multiseason import predict_103a_full, brier_skill_score
 
 def extract_physics_features(df: pd.DataFrame) -> pd.DataFrame:
-    """1번 레포지토리(1038점) 고유 물리 궤적 및 릴리즈 안정성 피처."""
+    """Physics-Trajectory Baseline(1038점) 고유 물리 궤적 및 릴리즈 안정성 피처."""
     velo = df["release_speed"].fillna(142.0).to_numpy(float) if "release_speed" in df.columns else np.full(len(df), 142.0)
     spin = df["spin_rate"].fillna(2200.0).to_numpy(float) if "spin_rate" in df.columns else np.full(len(df), 2200.0)
     pfx_x = df["pfx_x"].fillna(0.0).to_numpy(float) if "pfx_x" in df.columns else np.zeros(len(df))

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Production Package 108B: 107A Champion Backbone + 1번 레포 물리 궤적/릴리즈 포인트 융합 10-Model Dual-Engine Residual Booster (w=0.08)."""
+"""Build Production Package 108B: 107A Champion Backbone + Physics-Trajectory Baseline 물리 궤적/릴리즈 포인트 융합 10-Model Dual-Engine Residual Booster (w=0.08)."""
 import gc, hashlib, json, os, shutil, sys, time, zipfile
 from pathlib import Path
 import pandas as pd
@@ -35,7 +35,7 @@ def sha256_file(p: Path) -> str:
     return h.hexdigest()
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -56,7 +56,7 @@ def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
     }, index=df.index)
 
 def extract_physics_features(df: pd.DataFrame) -> pd.DataFrame:
-    """1번 레포지토리(1038점) 고유 물리 궤적 및 릴리즈 안정성 피처."""
+    """Physics-Trajectory Baseline(1038점) 고유 물리 궤적 및 릴리즈 안정성 피처."""
     velo = df["release_speed"].fillna(142.0).to_numpy(float) if "release_speed" in df.columns else np.full(len(df), 142.0)
     spin = df["spin_rate"].fillna(2200.0).to_numpy(float) if "spin_rate" in df.columns else np.full(len(df), 2200.0)
     pfx_x = df["pfx_x"].fillna(0.0).to_numpy(float) if "pfx_x" in df.columns else np.zeros(len(df))
@@ -255,7 +255,7 @@ MODEL = ROOT / "model"
 
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -277,7 +277,7 @@ def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def extract_physics_features(df: pd.DataFrame) -> pd.DataFrame:
-    """1번 레포지토리(1038점) 고유 물리 궤적 및 릴리즈 안정성 피처."""
+    """Physics-Trajectory Baseline(1038점) 고유 물리 궤적 및 릴리즈 안정성 피처."""
     velo = df["release_speed"].fillna(142.0).to_numpy(float) if "release_speed" in df.columns else np.full(len(df), 142.0)
     spin = df["spin_rate"].fillna(2200.0).to_numpy(float) if "spin_rate" in df.columns else np.full(len(df), 2200.0)
     pfx_x = df["pfx_x"].fillna(0.0).to_numpy(float) if "pfx_x" in df.columns else np.zeros(len(df))
@@ -487,7 +487,7 @@ def main():
     upshift_val = float(meta.get("pocket_upshift_val", +0.008))
     p = np.where(low_pocket_mask, p + upshift_val, p)
 
-    # 108B NEW: 1번 레포 물리 궤적/릴리즈 포인트 융합 10-Model Residual Booster (w=0.08)
+    # 108B NEW: Physics-Trajectory Baseline 물리 궤적/릴리즈 포인트 융합 10-Model Residual Booster (w=0.08)
     w_super_resid = float(meta.get("w_super_resid", 0.08))
     r_seeds = meta.get("r_seeds", [42, 1, 2, 3, 4])
     if regular.any() and w_super_resid > 0.0:
@@ -606,7 +606,7 @@ def build_package():
     manifest['version'] = 'REF4-SUPER-ENSEMBLE-108B'
     manifest['w_super_resid'] = 0.08
     manifest['r_seeds'] = r_seeds
-    manifest['notes'] = "108B Champion 107A (1115.2561 LB) + 1번 레포 물리 궤적/릴리즈 포인트 융합 10-Model Residual Booster (w=0.08)"
+    manifest['notes'] = "108B Champion 107A (1115.2561 LB) + Physics-Trajectory Baseline 물리 궤적/릴리즈 포인트 융합 10-Model Residual Booster (w=0.08)"
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
     print("Updated manifest.json for 108B")
     

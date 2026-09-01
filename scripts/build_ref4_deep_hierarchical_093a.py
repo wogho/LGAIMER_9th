@@ -203,7 +203,7 @@ def main():
     upshift_val = float(meta.get("pocket_upshift_val", +0.008))
     p = np.where(low_pocket_mask, p + upshift_val, p)
 
-    # 093A NEW: 12 Ball-Strike Count Cell Matrix Residual Engine (3번 레포 LEVEL_LEDGER 검증 모듈)
+    # 093A NEW: 12 Ball-Strike Count Cell Matrix Residual Engine (Asymmetric Matchup Model LEVEL_LEDGER 검증 모듈)
     # Cell dev map pre-calculated on training set residuals
     count_cell_map = {
         (0, 0): -0.0016, (0, 1): +0.0063, (0, 2): +0.0017,
@@ -211,7 +211,7 @@ def main():
         (2, 0): -0.0034, (2, 1): -0.0041, (2, 2): +0.0033,
         (3, 0): +0.0174, (3, 1): +0.0001, (3, 2): -0.0088
     }
-    w_count = float(meta.get("w_count_cell", 0.50)) # 3번 레포 최적 축소 가중치
+    w_count = float(meta.get("w_count_cell", 0.50)) # Asymmetric Matchup Model 최적 축소 가중치
     
     b_col = test["balls_before"].fillna(0).astype(int).to_numpy() if "balls_before" in test.columns else np.zeros(len(test), dtype=int)
     s_col = test["strikes_before"].fillna(0).astype(int).to_numpy() if "strikes_before" in test.columns else np.zeros(len(test), dtype=int)

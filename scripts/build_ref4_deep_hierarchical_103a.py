@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build Production Package 103A: New Champion 102A Backbone (1105.8202 LB) + 8번 레포 Refined Call Multi-Class Target Sub-Expert Integration."""
+"""Build Production Package 103A: New Champion 102A Backbone (1105.8202 LB) + Multi-Class Sub-Expert Engine Refined Call Multi-Class Target Sub-Expert Integration."""
 import gc, hashlib, json, os, shutil, sys, time, zipfile
 from pathlib import Path
 import pandas as pd
@@ -33,7 +33,7 @@ def sha256_file(p: Path) -> str:
     return h.hexdigest()
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -78,7 +78,7 @@ MODEL = ROOT / "model"
 
 
 def build_leverage_features(df: pd.DataFrame) -> pd.DataFrame:
-    """9번 레포지토리 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
+    """Leverage-Index Dynamics Engine 실측 +8.03pt 수혜 3대 Leverage Index 파생 피처."""
     li = df["li"].fillna(0.98).to_numpy(float) if "li" in df.columns else np.full(len(df), 0.98)
     b = df["balls_before"].fillna(0).to_numpy(float) if "balls_before" in df.columns else np.zeros(len(df))
     s = df["strikes_before"].fillna(0).to_numpy(float) if "strikes_before" in df.columns else np.zeros(len(df))
@@ -200,7 +200,7 @@ def main():
         v54_feat, _ = build_v54_per_season_asof_75_features(
             test, profile_path=MODEL / "team_asof_profile.json", priors=priors, prior=float(meta.get("prior", 0.523766))
         )
-        # Inject 9번 레포 3대 Leverage Index 파생 피처
+        # Inject Leverage-Index Dynamics Engine 3대 Leverage Index 파생 피처
         lev_df = build_leverage_features(test)
         v54_feat = pd.concat([v54_feat, lev_df], axis=1)
 
@@ -256,7 +256,7 @@ def main():
         deep_corr = p_deep_reconstructed - deep_mean_offset
         p = np.where(regular, p + w_deep * deep_corr, p)
 
-    # 103A NEW: 8번 레포 Refined Call 6-Class Multi-Class Sub-Expert (w=0.04)
+    # 103A NEW: Multi-Class Sub-Expert Engine Refined Call 6-Class Multi-Class Sub-Expert (w=0.04)
     w_refined_call = float(meta.get("w_refined_call", 0.04))
     if regular.any() and w_refined_call > 0.0 and (MODEL / "refined_call_expert.cbm").exists():
         cb_call = CatBoostClassifier()
@@ -305,7 +305,7 @@ if __name__ == "__main__":
 
 def build_package():
     t0 = time.time()
-    print("=== Step 1: Training 8번 레포 Refined Call 6-Class Multi-Class CatBoost Sub-Expert ===")
+    print("=== Step 1: Training Multi-Class Sub-Expert Engine Refined Call 6-Class Multi-Class CatBoost Sub-Expert ===")
     raw = pd.read_csv(ROOT / 'data/train.csv', low_memory=False)
     priors = build_per_season_priors(raw)
     
@@ -326,7 +326,7 @@ def build_package():
             x3_cb_tr[c] = x3_cb_tr[c].astype(str)
             cat_indices.append(c)
     
-    # 8번 레포 Refined Call 6-Class Target 분해:
+    # Multi-Class Sub-Expert Engine Refined Call 6-Class Target 분해:
     # 0 = success, 1 = ball, 2 = strike, 3 = reverse, 4 = middle, 5 = wild
     succ = train_reg["control_success"].to_numpy(int)
     rev = train_reg["subtype_reverse"].to_numpy(int) if "subtype_reverse" in train_reg.columns else np.zeros(len(train_reg), int)
@@ -378,7 +378,7 @@ def build_package():
     manifest['pocket_upshift_val'] = +0.008
     manifest['w_refined_call'] = 0.04
     manifest['call_mean_offset'] = call_mean_offset
-    manifest['notes'] = "103A Champion 102A Backbone (1105.8202 LB) + 8번 레포 Refined Call 6-Class Multi-Class Sub-Expert (w=0.04)"
+    manifest['notes'] = "103A Champion 102A Backbone (1105.8202 LB) + Multi-Class Sub-Expert Engine Refined Call 6-Class Multi-Class Sub-Expert (w=0.04)"
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
     print("Updated manifest.json for 103A")
     
